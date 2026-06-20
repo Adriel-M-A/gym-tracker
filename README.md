@@ -1,56 +1,28 @@
-# Welcome to your Expo app 👋
+# gym-tracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App móvil de uso personal para registrar y hacer el seguimiento de mis sesiones de entrenamiento. Construida con React Native y Expo SDK 56.
 
-## Get started
+## Propósito
 
-1. Install dependencies
+Esta aplicación está diseñada a medida para agilizar mi proceso en el gimnasio. En lugar de copiar, pegar y editar rutinas en un editor de texto convencional, la app leerá mis datos de entrenamiento generados a partir de mi base de datos personal (SQLite) y mostrará tarjetas interactivas por cada ejercicio y serie. Al finalizar la rutina, la app me permitirá exportar los datos realizados para guardarlos directamente en mi base de datos, manteniendo un historial preciso y centralizado.
 
-   ```bash
-   npm install
-   ```
+## Requisitos
 
-2. Start the app
+- Node.js >= 20.19.4
+- pnpm
+- Expo Go SDK 56 instalado en el celular (APK para Android: https://expo.dev/go?sdkVersion=56&platform=android&device=true)
 
-   ```bash
-   npx expo start
-   ```
+## Comandos
 
-In the output, you'll find options to open the app in a
+### Iniciar el servidor de desarrollo
+pnpm start
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Iniciar directamente en Android
+pnpm android
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Limpiar caché de Metro (usar cuando cambios estructurales no se reflejan en Expo Go)
+pnpm start -c
 
-## Get a fresh project
+## Testing
 
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+La app se testea exclusivamente con Expo Go durante el desarrollo. Al finalizar, se compilará el APK de producción para instalarlo en mi celular Android.
