@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { SetData } from '../types/workout';
-import { colors, effortColor } from '../constants/theme';
+import { colors } from '../constants/theme';
 
 interface SetRowProps {
   set: SetData;
@@ -14,7 +15,7 @@ export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: S
   const sugeridoReps = set.reps_min === set.reps_max
     ? `${set.reps_min}`
     : `${set.reps_min}/${set.reps_max}`;
-  const sugeridoTexto = `${set.peso_sugerido} kg x ${sugeridoReps}`;
+  const sugeridoTexto = `${set.peso_sugerido} kg × ${sugeridoReps}`;
   const sugeridoSufijo = set.serie_controlada ? ' (–)' : '';
 
   const handleRowPress = () => {
@@ -25,71 +26,121 @@ export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: S
     onSelect();
   };
 
-  const renderCheck = () => {
-    const handlePress = set.serie_controlada
-      ? onQuickComplete
-      : (set.completada ? onSelect : onQuickComplete);
+  const renderCheckCol = () => {
+    if (set.completada) {
+      return (
+        <Pressable onPress={onQuickComplete} hitSlop={10} style={styles.checkPressable}>
+          <MaterialIcons name="check-circle" size={24} color={colors.textPrimary} />
+        </Pressable>
+      );
+    }
 
+    const numberStyle = isSelected ? styles.numberCircleSelected : styles.numberCirclePending;
+    const textNumberStyle = isSelected ? styles.numberTextSelected : styles.numberTextPending;
+    
     return (
-      <Pressable
-        onPress={handlePress}
-        hitSlop={10}
+      <Pressable 
+        onPress={set.serie_controlada ? onQuickComplete : onSelect} 
+        hitSlop={10} 
         style={styles.checkPressable}
       >
-        <View style={[styles.checkCircle, set.completada && styles.checkCompleted]}>
-          {set.completada && <Text style={styles.checkIcon}>✓</Text>}
+        <View style={[styles.numberCircle, numberStyle]}>
+          <Text style={[styles.numberText, textNumberStyle]}>{set.serie}</Text>
         </View>
       </Pressable>
     );
   };
 
+  if (set.completada) {
+    return (
+      <Pressable onPress={handleRowPress} style={[styles.container, styles.containerCompleted]}>
+        <View style={styles.colCheck}>{renderCheckCol()}</View>
+        
+        <View style={styles.colSugerido}>
+          <View style={[styles.sugeridoInner, styles.opacity50]}>
+            <Text style={styles.textSugeridoCompleted}>
+              {sugeridoTexto}{sugeridoSufijo}
+            </Text>
+            {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
+              <View style={styles.effortBadge}>
+                <Text style={styles.effortBadgeText}>RPE {set.esfuerzo_sugerido}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.colRealizado}>
+          <View style={styles.realizadoInner}>
+            <Text style={styles.textRealizado}>
+              {set.peso_real} KG × {set.reps_reales}
+            </Text>
+            {set.esfuerzo_real > 0 && (
+              <View style={[styles.effortBadge, styles.effortBadgeReal]}>
+                <Text style={styles.effortBadgeTextReal}>RPE {set.esfuerzo_real}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Pressable>
+    );
+  }
+
+  if (isSelected) {
+    return (
+      <Pressable onPress={handleRowPress} style={[styles.container, styles.containerSelected]}>
+        <View style={styles.colCheck}>{renderCheckCol()}</View>
+        
+        <View style={styles.colSugerido}>
+          <View style={styles.sugeridoInner}>
+            <Text style={styles.textSugeridoActive}>
+              {sugeridoTexto}{sugeridoSufijo}
+            </Text>
+            {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
+              <View style={styles.effortBadge}>
+                <Text style={styles.effortBadgeText}>RPE {set.esfuerzo_sugerido}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.colRealizado}>
+          <View style={styles.realizadoInner}>
+            <Text style={styles.textRealizadoActive}>
+              {set.peso_real !== null ? set.peso_real : set.peso_sugerido} KG × {set.reps_reales !== null ? set.reps_reales : set.reps_min}
+            </Text>
+            {set.esfuerzo_real > 0 && (
+              <View style={[styles.effortBadge, styles.effortBadgeReal]}>
+                <Text style={styles.effortBadgeTextReal}>RPE {set.esfuerzo_real}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Pressable>
+    );
+  }
+
+  // Pendiente
   return (
-    <Pressable
-      onPress={handleRowPress}
-      style={({ pressed }) => [
-        styles.container,
-        isSelected && styles.containerSelected,
-        pressed && !set.serie_controlada && styles.pressed,
-      ]}
-    >
-      {/* Col 1: Check */}
-      <View style={styles.colCheck}>
-        {renderCheck()}
-      </View>
+    <Pressable onPress={handleRowPress} style={styles.container}>
+      <View style={styles.colCheck}>{renderCheckCol()}</View>
       
-      {/* Col 2: Sugerido */}
       <View style={styles.colSugerido}>
         <View style={styles.sugeridoInner}>
-          <Text style={[
-            styles.textSugerido,
-            isSelected && styles.textSelected,
-          ]}>
+          <Text style={styles.textSugeridoPending}>
             {sugeridoTexto}{sugeridoSufijo}
           </Text>
           {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
-            <View style={[styles.effortBadge, { backgroundColor: effortColor[set.esfuerzo_sugerido] }]}>
-              <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
+            <View style={styles.effortBadge}>
+              <Text style={styles.effortBadgeText}>RPE {set.esfuerzo_sugerido}</Text>
             </View>
           )}
         </View>
       </View>
 
-      {/* Col 3: Realizado */}
       <View style={styles.colRealizado}>
-        {set.completada ? (
-          <View style={styles.realizadoInner}>
-            <Text style={styles.textRealizado}>
-              {set.peso_real} kg x {set.reps_reales}
-            </Text>
-            {set.esfuerzo_real > 0 && (
-              <View style={[styles.effortBadge, { backgroundColor: effortColor[set.esfuerzo_real] }]}>
-                <Text style={styles.effortBadgeText}>{set.esfuerzo_real}</Text>
-              </View>
-            )}
-          </View>
-        ) : (
-          <Text style={styles.dash}>—</Text>
-        )}
+        <View style={styles.realizadoInnerPending}>
+          <Text style={styles.textRealizadoPending}>—</Text>
+        </View>
       </View>
     </Pressable>
   );
@@ -100,22 +151,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     minHeight: 52,
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingRight: 16,
-    borderLeftWidth: 3,
-    borderLeftColor: 'transparent',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
+    backgroundColor: '#ffffff',
   },
   containerSelected: {
-    borderLeftColor: colors.accent,
-    backgroundColor: '#eff6ff',
+    backgroundColor: colors.surfaceContainerLow,
   },
-  pressed: {
-    backgroundColor: '#f5f8ff',
+  containerCompleted: {
+    backgroundColor: '#ffffff',
   },
   colCheck: {
-    width: 44,
+    width: 48,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -126,28 +175,36 @@ const styles = StyleSheet.create({
   colRealizado: {
     flex: 1,
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   checkPressable: {
     padding: 4,
   },
-  checkCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+  numberCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.card,
   },
-  checkCompleted: {
-    borderColor: colors.success,
-    backgroundColor: colors.success,
+  numberCircleSelected: {
+    borderColor: colors.textPrimary,
+    backgroundColor: 'transparent',
   },
-  checkIcon: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: 'bold',
+  numberCirclePending: {
+    borderColor: colors.border,
+    backgroundColor: 'transparent',
+  },
+  numberText: {
+    fontFamily: 'Lexend_600SemiBold',
+    fontSize: 12,
+  },
+  numberTextSelected: {
+    color: colors.textPrimary,
+  },
+  numberTextPending: {
+    color: colors.textSecondary,
   },
   sugeridoInner: {
     flexDirection: 'row',
@@ -155,42 +212,69 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 6,
   },
-  textSugerido: {
-    fontSize: 15,
-    color: colors.textPrimary,
+  opacity50: {
+    opacity: 0.5,
   },
-  textSelected: {
-    fontWeight: '700',
-    color: colors.textPrimary,
-  },
-  textMuted: {
-    fontSize: 15,
+  textSugeridoCompleted: {
+    fontFamily: 'Lexend_400Regular',
+    fontSize: 14,
     color: colors.textSecondary,
   },
-  textRealizado: {
-    fontSize: 15,
+  textSugeridoActive: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 14,
     color: colors.textPrimary,
-    fontWeight: '500',
+  },
+  textSugeridoPending: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 14,
+    color: colors.textPrimary,
   },
   realizadoInner: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     gap: 6,
   },
-  dash: {
-    fontSize: 18,
+  realizadoInnerPending: {
+    opacity: 0.3,
+  },
+  textRealizado: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 16,
+    color: colors.textPrimary,
+  },
+  textRealizadoActive: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 16,
+    color: colors.textPrimary,
+  },
+  textRealizadoPending: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 16,
     color: colors.textSecondary,
   },
   effortBadge: {
-    width: 22,
-    height: 22,
-    borderRadius: 5,
+    backgroundColor: '#eeeeed',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
   effortBadgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
+    fontFamily: 'Lexend_600SemiBold',
+    fontSize: 10,
+    color: colors.textSecondary,
+  },
+  effortBadgeReal: {
+    backgroundColor: colors.textPrimary,
+  },
+  effortBadgeTextReal: {
+    fontFamily: 'Lexend_600SemiBold',
+    fontSize: 10,
+    color: '#ffffff',
   },
 });
+
+

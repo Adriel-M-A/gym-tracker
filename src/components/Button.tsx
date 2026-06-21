@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, StyleSheet, Pressable } from 'react-native';
+import { Text, StyleSheet, Pressable, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 
 interface ButtonProps {
@@ -7,9 +8,16 @@ interface ButtonProps {
   onPress: () => void;
   variant?: 'primary' | 'secondary';
   disabled?: boolean;
+  icon?: keyof typeof MaterialIcons.glyphMap;
 }
 
-export default function Button({ label, onPress, variant = 'primary', disabled = false }: ButtonProps) {
+export default function Button({ 
+  label, 
+  onPress, 
+  variant = 'primary', 
+  disabled = false,
+  icon
+}: ButtonProps) {
   const isPrimary = variant === 'primary';
   
   return (
@@ -23,22 +31,31 @@ export default function Button({ label, onPress, variant = 'primary', disabled =
         disabled && styles.disabled
       ]}
     >
-      <Text 
-        style={[
-          styles.text, 
-          isPrimary ? styles.textPrimary : styles.textSecondary
-        ]}
-      >
-        {label}
-      </Text>
+      <View style={styles.content}>
+        {icon && (
+          <MaterialIcons 
+            name={icon} 
+            size={18} 
+            color={isPrimary ? '#ffffff' : colors.textPrimary} 
+            style={styles.icon}
+          />
+        )}
+        <Text 
+          style={[
+            styles.text, 
+            isPrimary ? styles.textPrimary : styles.textSecondary
+          ]}
+        >
+          {label}
+        </Text>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    height: 48,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -49,23 +66,35 @@ const styles = StyleSheet.create({
   },
   secondary: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.accent,
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
   },
   disabled: {
     opacity: 0.5,
   },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    marginRight: 8,
+  },
   text: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 14,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
   textPrimary: {
     color: '#ffffff',
   },
   textSecondary: {
-    color: colors.accent,
+    color: colors.textPrimary,
   },
 });
+

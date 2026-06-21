@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { ExerciseData, EffortLevel } from '../types/workout';
 import { colors } from '../constants/theme';
 import SetRow from './SetRow';
@@ -60,38 +61,56 @@ export default function ExerciseCard({ exercise, onSetUpdate }: ExerciseCardProp
       {/* Header con expand/collapse */}
       <Pressable
         onPress={handleToggleExpand}
-        style={({ pressed }) => [styles.header, pressed && styles.headerPressed]}
+        style={({ pressed }) => [
+          styles.header, 
+          isExpanded && styles.headerExpanded,
+          pressed && styles.headerPressed
+        ]}
       >
         <View style={styles.headerLeft}>
           <Text style={styles.title}>{exercise.nombre}</Text>
-          <Text style={styles.subtitle}>descanso: {exercise.descanso}</Text>
+          <View style={styles.headerMeta}>
+            <View style={styles.metaItem}>
+              <MaterialIcons name="sync" size={14} color={colors.textSecondary} />
+              <Text style={styles.metaText}>Progreso: {completadas}/{total}</Text>
+            </View>
+            <View style={styles.metaItem}>
+              <MaterialIcons name="timer" size={14} color={colors.textSecondary} />
+              <Text style={styles.metaText}>Descanso: {exercise.descanso}</Text>
+            </View>
+          </View>
         </View>
         <View style={styles.headerRight}>
-          <Text style={styles.progressText}>{completadas}/{total}</Text>
-          <Text style={styles.chevron}>{isExpanded ? '▲' : '▼'}</Text>
+          <MaterialIcons 
+            name={isExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+            size={24} 
+            color={colors.textSecondary} 
+          />
         </View>
       </Pressable>
 
       {/* Contenido expandible */}
       {isExpanded && (
-        <>
-          {/* Cabecera de tabla */}
+        <View style={styles.content}>
+          {/* Encabezado de la tabla de series */}
           <View style={styles.tableHeader}>
-            <View style={styles.colCheck} />
-            <Text style={[styles.colSugerido, styles.headerLabel]}>Sugerido</Text>
-            <Text style={[styles.colRealizado, styles.headerLabel]}>Realizado</Text>
+            <View style={styles.colCheckPlaceholder} />
+            <Text style={styles.tableHeaderLabel}>SUGERIDO</Text>
+            <Text style={[styles.tableHeaderLabel, styles.tableHeaderLabelRight]}>REALIZADO</Text>
           </View>
 
           {/* Filas de series */}
-          {exercise.series.map((set, index) => (
-            <SetRow
-              key={set.serie}
-              set={set}
-              isSelected={selectedIndex === index}
-              onSelect={() => handleSelect(index)}
-              onQuickComplete={() => handleQuickComplete(index)}
-            />
-          ))}
+          <View style={styles.seriesContainer}>
+            {exercise.series.map((set, index) => (
+              <SetRow
+                key={set.serie}
+                set={set}
+                isSelected={selectedIndex === index}
+                onSelect={() => handleSelect(index)}
+                onQuickComplete={() => handleQuickComplete(index)}
+              />
+            ))}
+          </View>
 
           {/* Panel de carga */}
           {selectedIndex !== null && (
@@ -100,7 +119,7 @@ export default function ExerciseCard({ exercise, onSetUpdate }: ExerciseCardProp
               onLoad={handleLoad}
             />
           )}
-        </>
+        </View>
       )}
     </View>
   );
@@ -109,14 +128,11 @@ export default function ExerciseCard({ exercise, onSetUpdate }: ExerciseCardProp
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.card,
-    borderRadius: 14,
+    borderRadius: 12,
     marginVertical: 8,
     marginHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   header: {
@@ -124,58 +140,73 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingVertical: 16,
+    backgroundColor: '#ffffff',
+  },
+  headerExpanded: {
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   headerPressed: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#faf9f9',
   },
   headerLeft: {
     flex: 1,
   },
   headerRight: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 18,
+    color: colors.textPrimary,
+    marginBottom: 4,
+  },
+  headerMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 16,
   },
-  progressText: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    fontWeight: '500',
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
-  chevron: {
-    marginLeft: 4,
+  metaText: {
+    fontFamily: 'Lexend_400Regular',
     fontSize: 12,
     color: colors.textSecondary,
   },
-  title: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: colors.textSecondary,
+  content: {
+    backgroundColor: '#ffffff',
   },
   tableHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#fafafa',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingRight: 16,
+    height: 32,
+    backgroundColor: '#faf9f9',
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  headerLabel: {
-    fontSize: 11,
+  colCheckPlaceholder: {
+    width: 48,
+  },
+  tableHeaderLabel: {
+    flex: 1,
+    fontFamily: 'Lexend_600SemiBold',
+    fontSize: 9,
     color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    fontWeight: '600',
   },
-  colCheck: { width: 44 },
-  colSugerido: { flex: 1 },
-  colRealizado: { flex: 1, textAlign: 'right' },
+  tableHeaderLabelRight: {
+    textAlign: 'right',
+  },
+  seriesContainer: {
+    backgroundColor: '#ffffff',
+  },
 });
+
+

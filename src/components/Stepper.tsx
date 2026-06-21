@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../constants/theme';
 
 interface StepperProps {
@@ -9,9 +10,18 @@ interface StepperProps {
   min?: number;
   max?: number;
   label?: string;
+  variant?: 'header' | 'input';
 }
 
-export default function Stepper({ value, onChange, step = 0.25, min, max, label }: StepperProps) {
+export default function Stepper({ 
+  value, 
+  onChange, 
+  step = 0.25, 
+  min, 
+  max, 
+  label,
+  variant = 'header'
+}: StepperProps) {
   const handleDecrement = () => {
     const newValue = value - step;
     if (min !== undefined && newValue < min) return;
@@ -24,40 +34,53 @@ export default function Stepper({ value, onChange, step = 0.25, min, max, label 
     onChange(newValue);
   };
 
-  // Redondear para evitar flotantes raros en JS (ej: 0.10 + 0.20 = 0.3000000000004)
+  // Redondear para evitar flotantes en JS
   const displayValue = Number.isInteger(value) ? value.toString() : parseFloat(value.toFixed(2)).toString();
 
   const isDecrementDisabled = min !== undefined && value <= min;
   const isIncrementDisabled = max !== undefined && value >= max;
 
+  const isHeader = variant === 'header';
+
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={styles.controls}>
+      
+      <View style={isHeader ? styles.controlsHeader : styles.controlsInput}>
         <Pressable 
           onPress={handleDecrement} 
           disabled={isDecrementDisabled}
           style={({ pressed }) => [
-            styles.button, 
+            isHeader ? styles.buttonHeader : styles.buttonInput, 
             pressed && styles.buttonPressed,
             isDecrementDisabled && styles.buttonDisabled
           ]}
         >
-          <Text style={[styles.buttonText, isDecrementDisabled && styles.buttonTextDisabled]}>-</Text>
+          <MaterialIcons 
+            name="remove" 
+            size={20} 
+            color={isDecrementDisabled ? '#cfc4c5' : colors.textPrimary} 
+          />
         </Pressable>
-        <View style={styles.valueContainer}>
+        
+        <View style={isHeader ? styles.valueContainerHeader : styles.valueContainerInput}>
           <Text style={styles.valueText}>{displayValue}</Text>
         </View>
+        
         <Pressable 
           onPress={handleIncrement} 
           disabled={isIncrementDisabled}
           style={({ pressed }) => [
-            styles.button, 
+            isHeader ? styles.buttonHeader : styles.buttonInput, 
             pressed && styles.buttonPressed,
             isIncrementDisabled && styles.buttonDisabled
           ]}
         >
-          <Text style={[styles.buttonText, isIncrementDisabled && styles.buttonTextDisabled]}>+</Text>
+          <MaterialIcons 
+            name="add" 
+            size={20} 
+            color={isIncrementDisabled ? '#cfc4c5' : colors.textPrimary} 
+          />
         </Pressable>
       </View>
     </View>
@@ -67,48 +90,73 @@ export default function Stepper({ value, onChange, step = 0.25, min, max, label 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    width: '100%',
   },
   label: {
+    fontFamily: 'Lexend_600SemiBold',
     color: colors.textSecondary,
-    fontSize: 12,
-    marginBottom: 4,
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    textAlign: 'center',
   },
-  controls: {
+  controlsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    justifyContent: 'center',
+    gap: 16,
+    width: '100%',
+  },
+  controlsInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
+    height: 48,
+    width: '100%',
+    overflow: 'hidden',
   },
-  button: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+  buttonHeader: {
+    width: 40,
+    height: 40,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+  },
+  buttonInput: {
+    width: 44,
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonPressed: {
-    opacity: 0.6,
+    backgroundColor: '#f4f3f3',
   },
   buttonDisabled: {
-    backgroundColor: 'transparent',
+    opacity: 0.5,
   },
-  buttonTextDisabled: {
-    color: colors.border, // un tono gris claro/medio para denotar deshabilitado
+  valueContainerHeader: {
+    flex: 1,
+    minWidth: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  buttonText: {
-    fontSize: 20,
-    color: colors.accent,
-    fontWeight: '500',
-  },
-  valueContainer: {
-    minWidth: 48,
+  valueContainerInput: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   valueText: {
-    fontSize: 16,
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 24,
     color: colors.textPrimary,
-    fontWeight: '600',
   },
 });
+

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, Text, View, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MaterialIcons } from "@expo/vector-icons";
 import ExerciseCard from "../components/ExerciseCard";
 import SessionHeader from "../components/SessionHeader";
 import { colors } from "../constants/theme";
@@ -171,11 +172,12 @@ export default function WorkoutScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
       
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Sesión {session.sesion}</Text>
-      </View>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        {/* Header de la Sesión en el ScrollView */}
+        <View style={styles.titleSection}>
+          <Text style={styles.titleMain}>Sesión {session.sesion}</Text>
+        </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
         <SessionHeader
           energia={session.energia}
           suenio={session.suenio}
@@ -183,16 +185,30 @@ export default function WorkoutScreen() {
           onSuenioChange={handleSuenioChange}
         />
 
-        {session.ejercicios.map((ej, index) => (
-          <ExerciseCard
-            key={ej.nombre}
-            exercise={ej}
-            onSetUpdate={(sIndex, peso, reps, esf, completada) =>
-              handleSetUpdate(index, sIndex, peso, reps, esf, completada)
-            }
-          />
-        ))}
+        <View style={styles.exerciseList}>
+          {session.ejercicios.map((ej, index) => (
+            <ExerciseCard
+              key={ej.nombre}
+              exercise={ej}
+              onSetUpdate={(sIndex, peso, reps, esf, completada) =>
+                handleSetUpdate(index, sIndex, peso, reps, esf, completada)
+              }
+            />
+          ))}
+        </View>
       </ScrollView>
+
+      {/* Bottom Navigation Bar */}
+      <View style={[styles.navBar, { paddingBottom: insets.bottom || 16 }]}>
+        <Pressable style={[styles.navButton, styles.navButtonActive]}>
+          <MaterialIcons name="fitness-center" size={24} color={colors.textPrimary} />
+          <Text style={styles.navTextActive}>Workout</Text>
+        </Pressable>
+        <Pressable style={styles.navButton}>
+          <MaterialIcons name="swap-horiz" size={24} color={colors.textSecondary} />
+          <Text style={styles.navText}>Importar/Exportar</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -202,23 +218,69 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  header: {
-    height: 56,
-    justifyContent: "center",
-    paddingHorizontal: 16,
-    backgroundColor: colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.textPrimary,
-  },
   scroll: {
     flex: 1,
   },
-  content: {
-    paddingBottom: 24,
+  scrollContent: {
+    paddingTop: 16,
+    paddingBottom: 100, // Espacio para el navBar
+  },
+  titleSection: {
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  titleLabel: {
+    fontFamily: "Lexend_700Bold",
+    fontSize: 10,
+    textTransform: "uppercase",
+    color: colors.textSecondary,
+    letterSpacing: 1,
+    marginBottom: 2,
+  },
+  titleMain: {
+    fontFamily: "Anton_400Regular",
+    fontSize: 32,
+    color: colors.textPrimary,
+  },
+  exerciseList: {
+    marginTop: 8,
+  },
+  navBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    backgroundColor: colors.card,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: 8,
+  },
+  navButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 4,
+  },
+  navButtonActive: {
+    borderTopWidth: 2,
+    borderTopColor: colors.textPrimary,
+    marginTop: -8, // Ajuste para el borde superior que sube
+    paddingTop: 12,
+  },
+  navText: {
+    fontFamily: "Lexend_600SemiBold",
+    fontSize: 10,
+    textTransform: "uppercase",
+    color: colors.textSecondary,
+    marginTop: 4,
+  },
+  navTextActive: {
+    fontFamily: "Lexend_700Bold",
+    fontSize: 10,
+    textTransform: "uppercase",
+    color: colors.textPrimary,
+    marginTop: 4,
   },
 });
+

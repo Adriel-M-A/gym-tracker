@@ -22,9 +22,9 @@ export default function InputPanel({ set, onLoad }: InputPanelProps) {
       setReps(set.reps_reales);
       setEsfuerzo(set.esfuerzo_real);
     } else {
-      setPeso(set.peso_sugerido);
-      setReps(set.reps_min);
-      setEsfuerzo(0);
+      setPeso(set.peso_real !== null ? set.peso_real : set.peso_sugerido);
+      setReps(set.reps_reales !== null ? set.reps_reales : set.reps_min);
+      setEsfuerzo(set.esfuerzo_real || 0);
     }
   }, [set]);
 
@@ -32,15 +32,38 @@ export default function InputPanel({ set, onLoad }: InputPanelProps) {
     <View style={styles.container}>
       <View style={styles.steppersRow}>
         {/* Peso: pasos de 0.25 */}
-        <Stepper label="Peso" value={peso} onChange={setPeso} step={0.25} min={0} />
+        <View style={styles.stepperWrapper}>
+          <Stepper 
+            label="Peso (kg)" 
+            value={peso} 
+            onChange={setPeso} 
+            step={0.25} 
+            min={0} 
+            variant="input"
+          />
+        </View>
+        
         {/* Reps: pasos de 1 en 1 */}
-        <Stepper label="Reps" value={reps} onChange={setReps} step={1} min={1} />
+        <View style={styles.stepperWrapper}>
+          <Stepper 
+            label="Reps" 
+            value={reps} 
+            onChange={setReps} 
+            step={1} 
+            min={1} 
+            variant="input"
+          />
+        </View>
       </View>
 
       <EffortPicker value={esfuerzo} onChange={setEsfuerzo} />
 
       <View style={styles.buttonContainer}>
-        <Button label="CARGAR" onPress={() => onLoad(peso, reps, esfuerzo)} />
+        <Button 
+          label="CARGAR SERIE" 
+          icon="check" 
+          onPress={() => onLoad(peso, reps, esfuerzo)} 
+        />
       </View>
     </View>
   );
@@ -48,17 +71,22 @@ export default function InputPanel({ set, onLoad }: InputPanelProps) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#f8f9fc',
+    padding: 24,
+    backgroundColor: colors.surfaceContainer,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
   steppersRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    gap: 16,
+    width: '100%',
     marginBottom: 4,
   },
+  stepperWrapper: {
+    flex: 1,
+  },
   buttonContainer: {
-    marginTop: 4,
+    marginTop: 8,
   },
 });
+
