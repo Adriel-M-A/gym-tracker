@@ -1,65 +1,20 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+export const colors = {
+  background:      '#f2f2f7',  // fondo de la pantalla
+  card:            '#ffffff',  // fondo de tarjetas y paneles
+  border:          '#e5e5ea',  // bordes y separadores
+  textPrimary:     '#1c1c1e',  // texto principal
+  textSecondary:   '#8e8e93',  // metadatos, etiquetas, notas
+  accent:          '#3b82f6',  // azul de selección y acción primaria
+  success:         '#34c759',  // check completado, serie controlada
+  danger:          '#ff3b30',  // alerta, fallo
+};
 
-import '@/global.css';
-
-import { Platform } from 'react-native';
-
-export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
-} as const;
-
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
-
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
-
-export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
-} as const;
-
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+// Color del badge de esfuerzo según nivel
+export const effortColor: Record<number, string> = {
+  0: colors.textSecondary,  // normal, sin marca (no se muestra badge)
+  1: '#a8c5fa',             // azul claro, esfuerzo mínimo perceptible
+  2: '#34c759',             // verde, cómodo
+  3: '#ffcc00',             // amarillo, exigente
+  4: '#ff9500',             // naranja, consolidando
+  5: '#ff3b30',             // rojo, fallo o límite
+};
