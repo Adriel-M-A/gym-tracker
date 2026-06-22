@@ -2,19 +2,19 @@
 export type EffortLevel = 0 | 1 | 2 | 3 | 4 | 5;
 
 export interface SetData {
-  serie: number;
+  numero_serie: number;
   // Campos de la IA (lectura)
   peso_sugerido: number;
-  reps_min: number;
-  reps_max: number;
-  serie_controlada: boolean;  // (-) en la nomenclatura
-  esfuerzo_sugerido: EffortLevel | null;
-  nota: string | null;
+  reps_sugeridas_min: number;
+  reps_sugeridas_max: number;
+  serie_controlada: 0 | 1;  // 1 = controlada (-)
+  esfuerzo_sugerido: EffortLevel; // 0 = sin marca
+  es_bw: 0 | 1;             // 1 = peso corporal (bodyweight)
+  notas: string | null;
   // Campos del usuario (escritura)
-  peso_real: number | null;
-  reps_reales: number | null;
-  esfuerzo_real: EffortLevel;  // default 0
-  completada: boolean;
+  peso: number | null;
+  repeticiones: number | null;
+  esfuerzo: EffortLevel;    // default 0
 }
 
 export interface ExerciseData {

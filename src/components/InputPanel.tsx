@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SetData, EffortLevel } from '../types/workout';
 import { Stepper } from './Stepper';
@@ -12,21 +12,9 @@ interface InputPanelProps {
 }
 
 export function InputPanel({ set, onLoad }: InputPanelProps) {
-  const [peso, setPeso] = useState<number>(set.peso_sugerido);
-  const [reps, setReps] = useState<number>(set.reps_min);
-  const [esfuerzo, setEsfuerzo] = useState<EffortLevel>(0);
-
-  useEffect(() => {
-    if (set.completada && set.peso_real !== null && set.reps_reales !== null) {
-      setPeso(set.peso_real);
-      setReps(set.reps_reales);
-      setEsfuerzo(set.esfuerzo_real);
-    } else {
-      setPeso(set.peso_real !== null ? set.peso_real : set.peso_sugerido);
-      setReps(set.reps_reales !== null ? set.reps_reales : set.reps_min);
-      setEsfuerzo(set.esfuerzo_real || 0);
-    }
-  }, [set]);
+  const [peso, setPeso] = useState<number>(set.peso !== null ? set.peso : set.peso_sugerido);
+  const [reps, setReps] = useState<number>(set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min);
+  const [esfuerzo, setEsfuerzo] = useState<EffortLevel>(set.esfuerzo || 0);
 
   return (
     <View style={styles.container}>

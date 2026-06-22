@@ -11,9 +11,11 @@ interface SetRowProps {
 }
 
 export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
-  const sugeridoReps = set.reps_min === set.reps_max
-    ? `${set.reps_min}`
-    : `${set.reps_min}/${set.reps_max}`;
+  const isCompletada = set.peso !== null && set.repeticiones !== null;
+
+  const sugeridoReps = set.reps_sugeridas_min === set.reps_sugeridas_max
+    ? `${set.reps_sugeridas_min}`
+    : `${set.reps_sugeridas_min}/${set.reps_sugeridas_max}`;
   const sugeridoTexto = `${set.peso_sugerido} kg × ${sugeridoReps}`;
 
   const handleRowPress = () => {
@@ -21,20 +23,20 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
   };
 
   const renderIndicatorCol = () => {
-    const numberStyle = set.completada 
+    const numberStyle = isCompletada 
       ? styles.numberCircleCompleted 
       : isSelected ? styles.numberCircleSelected : styles.numberCirclePending;
       
-    const textNumberStyle = set.completada
+    const textNumberStyle = isCompletada
       ? styles.numberTextCompleted
       : isSelected ? styles.numberTextSelected : styles.numberTextPending;
     
     return (
       <View style={styles.indicatorContainer}>
         <View style={[styles.numberCircle, numberStyle]}>
-          <Text style={[styles.numberText, textNumberStyle]}>{set.serie}</Text>
+          <Text style={[styles.numberText, textNumberStyle]}>{set.numero_serie}</Text>
         </View>
-        {set.completada && (
+        {isCompletada && (
           <View style={styles.completedBadge}>
             <MaterialIcons name="check-circle" size={14} color={colors.textPrimary} />
           </View>
@@ -44,17 +46,17 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
   };
 
   const sugeridoStyle = [
-    set.completada ? styles.textSugeridoCompleted : (isSelected ? styles.textSugeridoActive : styles.textSugeridoPending),
-    set.serie_controlada && { textDecorationLine: 'underline' as const }
+    isCompletada ? styles.textSugeridoCompleted : (isSelected ? styles.textSugeridoActive : styles.textSugeridoPending),
+    set.serie_controlada === 1 && { textDecorationLine: 'underline' as const }
   ];
 
-  if (set.completada) {
+  if (isCompletada) {
     return (
       <Pressable 
         onPress={handleRowPress} 
         style={[styles.container, styles.containerCompleted]}
         accessibilityRole="button"
-        accessibilityLabel={`Serie ${set.serie} completada`}
+        accessibilityLabel={`Serie ${set.numero_serie} completada`}
       >
         <View style={styles.colIndicator}>{renderIndicatorCol()}</View>
         
@@ -63,7 +65,7 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
             <Text style={sugeridoStyle}>
               {sugeridoTexto}
             </Text>
-            {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
+            {set.esfuerzo_sugerido > 0 && set.serie_controlada === 0 && (
               <View style={styles.effortBadge}>
                 <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
               </View>
@@ -74,11 +76,11 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
         <View style={styles.colRealizado}>
           <View style={styles.realizadoInner}>
             <Text style={styles.textRealizado}>
-              {set.peso_real} KG × {set.reps_reales}
+              {set.peso} KG × {set.repeticiones}
             </Text>
-            {set.esfuerzo_real > 0 && (
+            {set.esfuerzo > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>
-                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo_real}</Text>
+                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo}</Text>
               </View>
             )}
           </View>
@@ -93,7 +95,7 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
         onPress={handleRowPress} 
         style={[styles.container, styles.containerSelected]}
         accessibilityRole="button"
-        accessibilityLabel={`Serie ${set.serie} seleccionada`}
+        accessibilityLabel={`Serie ${set.numero_serie} seleccionada`}
       >
         <View style={styles.colIndicator}>{renderIndicatorCol()}</View>
         
@@ -102,7 +104,7 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
             <Text style={sugeridoStyle}>
               {sugeridoTexto}
             </Text>
-            {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
+            {set.esfuerzo_sugerido > 0 && set.serie_controlada === 0 && (
               <View style={styles.effortBadge}>
                 <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
               </View>
@@ -113,11 +115,11 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
         <View style={styles.colRealizado}>
           <View style={styles.realizadoInner}>
             <Text style={styles.textRealizadoActive}>
-              {set.peso_real !== null ? set.peso_real : set.peso_sugerido} KG × {set.reps_reales !== null ? set.reps_reales : set.reps_min}
+              {set.peso !== null ? set.peso : set.peso_sugerido} KG × {set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min}
             </Text>
-            {set.esfuerzo_real > 0 && (
+            {set.esfuerzo > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>
-                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo_real}</Text>
+                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo}</Text>
               </View>
             )}
           </View>
@@ -132,7 +134,7 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
       onPress={handleRowPress} 
       style={styles.container}
       accessibilityRole="button"
-      accessibilityLabel={`Serie ${set.serie} pendiente`}
+      accessibilityLabel={`Serie ${set.numero_serie} pendiente`}
     >
       <View style={styles.colIndicator}>{renderIndicatorCol()}</View>
       
@@ -141,7 +143,7 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
           <Text style={sugeridoStyle}>
             {sugeridoTexto}
           </Text>
-          {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
+          {set.esfuerzo_sugerido > 0 && set.serie_controlada === 0 && (
             <View style={styles.effortBadge}>
               <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
             </View>

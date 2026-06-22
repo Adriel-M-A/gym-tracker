@@ -36,12 +36,12 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
 
   const handleLoad = (peso: number, reps: number, esfuerzo: EffortLevel) => {
     if (selectedIndex !== null) {
-      updateSet(exerciseIndex, selectedIndex, peso, reps, esfuerzo, true);
+      updateSet(exerciseIndex, selectedIndex, peso, reps, esfuerzo);
       setSelectedIndex(null);
     }
   };
 
-  const completadas = exercise.series.filter(s => s.completada).length;
+  const completadas = exercise.series.filter(s => s.peso !== null && s.repeticiones !== null).length;
   const total = exercise.series.length;
 
   return (
@@ -91,7 +91,7 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
           <View style={styles.seriesContainer}>
             {exercise.series.map((set, index) => (
               <SetRow
-                key={set.serie}
+                key={set.numero_serie}
                 set={set}
                 isSelected={selectedIndex === index}
                 onSelect={() => handleSelect(index)}
@@ -102,6 +102,7 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
           {/* Panel de carga */}
           {selectedIndex !== null && (
             <InputPanel
+              key={exercise.series[selectedIndex].numero_serie}
               set={exercise.series[selectedIndex]}
               onLoad={handleLoad}
             />
