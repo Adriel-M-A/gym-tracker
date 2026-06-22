@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { Tabs } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -10,6 +10,7 @@ import {
   Lexend_700Bold,
 } from "@expo-google-fonts/lexend";
 import { colors } from "../constants/theme";
+import { useWorkoutStore } from "../store/workoutStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,13 +23,23 @@ export default function RootLayout() {
     Lexend_700Bold,
   });
 
+  const [hydrated, setHydrated] = useState(() => useWorkoutStore.persist.hasHydrated());
+
   useEffect(() => {
-    if (loaded || error) {
+    const unsub = useWorkoutStore.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    if ((loaded || error) && hydrated) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [loaded, error, hydrated]);
 
-  if (!loaded && !error) {
+  if ((!loaded && !error) || !hydrated) {
     return null;
   }
 

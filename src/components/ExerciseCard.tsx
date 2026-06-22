@@ -12,7 +12,7 @@ interface ExerciseCardProps {
 }
 
 export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
-  const exercise = useWorkoutStore(state => state.session.ejercicios[exerciseIndex]);
+  const exercise = useWorkoutStore(state => state.session!.ejercicios[exerciseIndex]);
   const updateSet = useWorkoutStore(state => state.updateSet);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);

@@ -5,8 +5,8 @@ import { colors } from '../constants/theme';
 import { useWorkoutStore } from '../store/workoutStore';
 
 export function SessionHeader() {
-  const energia = useWorkoutStore(state => state.session.energia);
-  const suenio = useWorkoutStore(state => state.session.suenio);
+  const energia = useWorkoutStore(state => state.session?.energia);
+  const suenio = useWorkoutStore(state => state.session?.suenio);
   const setEnergia = useWorkoutStore(state => state.setEnergia);
   const setSuenio = useWorkoutStore(state => state.setSuenio);
 
