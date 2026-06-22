@@ -8,62 +8,64 @@ interface SetRowProps {
   set: SetData;
   isSelected: boolean;
   onSelect: () => void;
-  onQuickComplete: () => void;
 }
 
-export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: SetRowProps) {
+export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
   const sugeridoReps = set.reps_min === set.reps_max
     ? `${set.reps_min}`
     : `${set.reps_min}/${set.reps_max}`;
   const sugeridoTexto = `${set.peso_sugerido} kg × ${sugeridoReps}`;
-  const sugeridoSufijo = set.serie_controlada ? ' (–)' : '';
 
   const handleRowPress = () => {
-    if (set.serie_controlada) {
-      onQuickComplete();
-      return;
-    }
     onSelect();
   };
 
-  const renderCheckCol = () => {
-    if (set.completada) {
-      return (
-        <Pressable onPress={onQuickComplete} hitSlop={10} style={styles.checkPressable}>
-          <MaterialIcons name="check-circle" size={24} color={colors.textPrimary} />
-        </Pressable>
-      );
-    }
-
-    const numberStyle = isSelected ? styles.numberCircleSelected : styles.numberCirclePending;
-    const textNumberStyle = isSelected ? styles.numberTextSelected : styles.numberTextPending;
+  const renderIndicatorCol = () => {
+    const numberStyle = set.completada 
+      ? styles.numberCircleCompleted 
+      : isSelected ? styles.numberCircleSelected : styles.numberCirclePending;
+      
+    const textNumberStyle = set.completada
+      ? styles.numberTextCompleted
+      : isSelected ? styles.numberTextSelected : styles.numberTextPending;
     
     return (
-      <Pressable 
-        onPress={set.serie_controlada ? onQuickComplete : onSelect} 
-        hitSlop={10} 
-        style={styles.checkPressable}
-      >
+      <View style={styles.indicatorContainer}>
         <View style={[styles.numberCircle, numberStyle]}>
           <Text style={[styles.numberText, textNumberStyle]}>{set.serie}</Text>
         </View>
-      </Pressable>
+        {set.completada && (
+          <View style={styles.completedBadge}>
+            <MaterialIcons name="check-circle" size={14} color={colors.textPrimary} />
+          </View>
+        )}
+      </View>
     );
   };
 
+  const sugeridoStyle = [
+    set.completada ? styles.textSugeridoCompleted : (isSelected ? styles.textSugeridoActive : styles.textSugeridoPending),
+    set.serie_controlada && { textDecorationLine: 'underline' as const }
+  ];
+
   if (set.completada) {
     return (
-      <Pressable onPress={handleRowPress} style={[styles.container, styles.containerCompleted]}>
-        <View style={styles.colCheck}>{renderCheckCol()}</View>
+      <Pressable 
+        onPress={handleRowPress} 
+        style={[styles.container, styles.containerCompleted]}
+        accessibilityRole="button"
+        accessibilityLabel={`Serie ${set.serie} completada`}
+      >
+        <View style={styles.colIndicator}>{renderIndicatorCol()}</View>
         
         <View style={styles.colSugerido}>
           <View style={[styles.sugeridoInner, styles.opacity50]}>
-            <Text style={styles.textSugeridoCompleted}>
-              {sugeridoTexto}{sugeridoSufijo}
+            <Text style={sugeridoStyle}>
+              {sugeridoTexto}
             </Text>
             {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
               <View style={styles.effortBadge}>
-                <Text style={styles.effortBadgeText}>RPE {set.esfuerzo_sugerido}</Text>
+                <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
               </View>
             )}
           </View>
@@ -76,7 +78,7 @@ export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: S
             </Text>
             {set.esfuerzo_real > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>
-                <Text style={styles.effortBadgeTextReal}>RPE {set.esfuerzo_real}</Text>
+                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo_real}</Text>
               </View>
             )}
           </View>
@@ -87,17 +89,22 @@ export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: S
 
   if (isSelected) {
     return (
-      <Pressable onPress={handleRowPress} style={[styles.container, styles.containerSelected]}>
-        <View style={styles.colCheck}>{renderCheckCol()}</View>
+      <Pressable 
+        onPress={handleRowPress} 
+        style={[styles.container, styles.containerSelected]}
+        accessibilityRole="button"
+        accessibilityLabel={`Serie ${set.serie} seleccionada`}
+      >
+        <View style={styles.colIndicator}>{renderIndicatorCol()}</View>
         
         <View style={styles.colSugerido}>
           <View style={styles.sugeridoInner}>
-            <Text style={styles.textSugeridoActive}>
-              {sugeridoTexto}{sugeridoSufijo}
+            <Text style={sugeridoStyle}>
+              {sugeridoTexto}
             </Text>
             {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
               <View style={styles.effortBadge}>
-                <Text style={styles.effortBadgeText}>RPE {set.esfuerzo_sugerido}</Text>
+                <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
               </View>
             )}
           </View>
@@ -110,7 +117,7 @@ export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: S
             </Text>
             {set.esfuerzo_real > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>
-                <Text style={styles.effortBadgeTextReal}>RPE {set.esfuerzo_real}</Text>
+                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo_real}</Text>
               </View>
             )}
           </View>
@@ -121,17 +128,22 @@ export default function SetRow({ set, isSelected, onSelect, onQuickComplete }: S
 
   // Pendiente
   return (
-    <Pressable onPress={handleRowPress} style={styles.container}>
-      <View style={styles.colCheck}>{renderCheckCol()}</View>
+    <Pressable 
+      onPress={handleRowPress} 
+      style={styles.container}
+      accessibilityRole="button"
+      accessibilityLabel={`Serie ${set.serie} pendiente`}
+    >
+      <View style={styles.colIndicator}>{renderIndicatorCol()}</View>
       
       <View style={styles.colSugerido}>
         <View style={styles.sugeridoInner}>
-          <Text style={styles.textSugeridoPending}>
-            {sugeridoTexto}{sugeridoSufijo}
+          <Text style={sugeridoStyle}>
+            {sugeridoTexto}
           </Text>
           {set.esfuerzo_sugerido !== null && set.esfuerzo_sugerido > 0 && !set.serie_controlada && (
             <View style={styles.effortBadge}>
-              <Text style={styles.effortBadgeText}>RPE {set.esfuerzo_sugerido}</Text>
+              <Text style={styles.effortBadgeText}>{set.esfuerzo_sugerido}</Text>
             </View>
           )}
         </View>
@@ -163,7 +175,7 @@ const styles = StyleSheet.create({
   containerCompleted: {
     backgroundColor: '#ffffff',
   },
-  colCheck: {
+  colIndicator: {
     width: 48,
     alignItems: 'center',
     justifyContent: 'center',
@@ -177,8 +189,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
-  checkPressable: {
-    padding: 4,
+  indicatorContainer: {
+    position: 'relative',
+    padding: 8,
   },
   numberCircle: {
     width: 24,
@@ -187,6 +200,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  numberCircleCompleted: {
+    borderColor: colors.textPrimary,
+    backgroundColor: '#ffffff',
   },
   numberCircleSelected: {
     borderColor: colors.textPrimary,
@@ -200,11 +217,21 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend_600SemiBold',
     fontSize: 12,
   },
+  numberTextCompleted: {
+    color: colors.textPrimary,
+  },
   numberTextSelected: {
     color: colors.textPrimary,
   },
   numberTextPending: {
     color: colors.textSecondary,
+  },
+  completedBadge: {
+    position: 'absolute',
+    bottom: 4,
+    right: 4,
+    backgroundColor: '#ffffff',
+    borderRadius: 7,
   },
   sugeridoInner: {
     flexDirection: 'row',

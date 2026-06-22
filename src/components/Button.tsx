@@ -11,7 +11,7 @@ interface ButtonProps {
   icon?: keyof typeof MaterialIcons.glyphMap;
 }
 
-export default function Button({ 
+export function Button({ 
   label, 
   onPress, 
   variant = 'primary', 

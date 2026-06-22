@@ -1,21 +1,15 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Stepper from './Stepper';
+import { Stepper } from './Stepper';
 import { colors } from '../constants/theme';
+import { useWorkoutStore } from '../store/workoutStore';
 
-interface SessionHeaderProps {
-  energia: number | null;
-  suenio: number | null;
-  onEnergiaChange: (v: number) => void;
-  onSuenioChange: (v: number) => void;
-}
+export function SessionHeader() {
+  const energia = useWorkoutStore(state => state.session.energia);
+  const suenio = useWorkoutStore(state => state.session.suenio);
+  const setEnergia = useWorkoutStore(state => state.setEnergia);
+  const setSuenio = useWorkoutStore(state => state.setSuenio);
 
-export default function SessionHeader({ 
-  energia, 
-  suenio, 
-  onEnergiaChange, 
-  onSuenioChange 
-}: SessionHeaderProps) {
   return (
     <View style={styles.container}>
       <View style={styles.steppersRow}>
@@ -23,7 +17,7 @@ export default function SessionHeader({
           <Stepper 
             label="Energía" 
             value={energia ?? 3} 
-            onChange={onEnergiaChange} 
+            onChange={setEnergia} 
             step={1} 
             min={1}
             max={5}
@@ -35,7 +29,7 @@ export default function SessionHeader({
           <Stepper 
             label="Sueño (hs)" 
             value={suenio ?? 7.5} 
-            onChange={onSuenioChange} 
+            onChange={setSuenio} 
             step={0.5} 
             min={0} 
             variant="header"
@@ -61,8 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.card,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
     paddingVertical: 16,
     paddingHorizontal: 16,
     alignItems: 'center',

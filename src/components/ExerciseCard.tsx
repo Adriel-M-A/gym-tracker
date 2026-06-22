@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { ExerciseData, EffortLevel } from '../types/workout';
+import { EffortLevel } from '../types/workout';
 import { colors } from '../constants/theme';
-import SetRow from './SetRow';
-import InputPanel from './InputPanel';
+import { SetRow } from './SetRow';
+import { InputPanel } from './InputPanel';
+import { useWorkoutStore } from '../store/workoutStore';
 
 interface ExerciseCardProps {
-  exercise: ExerciseData;
-  onSetUpdate: (
-    serieIndex: number,
-    peso: number | null,
-    reps: number | null,
-    esfuerzo: EffortLevel,
-    completada: boolean
-  ) => void;
+  exerciseIndex: number;
 }
 
-export default function ExerciseCard({ exercise, onSetUpdate }: ExerciseCardProps) {
+export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
+  const exercise = useWorkoutStore(state => state.session.ejercicios[exerciseIndex]);
+  const updateSet = useWorkoutStore(state => state.updateSet);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -36,19 +32,11 @@ export default function ExerciseCard({ exercise, onSetUpdate }: ExerciseCardProp
     setIsExpanded(!isExpanded);
   };
 
-  const handleQuickComplete = (index: number) => {
-    const set = exercise.series[index];
-    if (set.completada) {
-      onSetUpdate(index, null, null, 0, false);
-    } else {
-      onSetUpdate(index, set.peso_sugerido, set.reps_min, 0, true);
-    }
-    setSelectedIndex(null);
-  };
+
 
   const handleLoad = (peso: number, reps: number, esfuerzo: EffortLevel) => {
     if (selectedIndex !== null) {
-      onSetUpdate(selectedIndex, peso, reps, esfuerzo, true);
+      updateSet(exerciseIndex, selectedIndex, peso, reps, esfuerzo, true);
       setSelectedIndex(null);
     }
   };
@@ -107,7 +95,6 @@ export default function ExerciseCard({ exercise, onSetUpdate }: ExerciseCardProp
                 set={set}
                 isSelected={selectedIndex === index}
                 onSelect={() => handleSelect(index)}
-                onQuickComplete={() => handleQuickComplete(index)}
               />
             ))}
           </View>
@@ -131,8 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginVertical: 8,
     marginHorizontal: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
     overflow: 'hidden',
   },
   header: {

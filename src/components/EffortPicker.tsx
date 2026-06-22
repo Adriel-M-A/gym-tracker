@@ -10,7 +10,7 @@ interface EffortPickerProps {
 
 const EFFORT_LEVELS: EffortLevel[] = [1, 2, 3, 4, 5];
 
-export default function EffortPicker({ value, onChange }: EffortPickerProps) {
+export function EffortPicker({ value, onChange }: EffortPickerProps) {
   const handlePress = (level: EffortLevel) => {
     if (value === level) {
       onChange(0); // deseleccionar

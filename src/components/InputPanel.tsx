@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SetData, EffortLevel } from '../types/workout';
-import Stepper from './Stepper';
-import EffortPicker from './EffortPicker';
-import Button from './Button';
+import { Stepper } from './Stepper';
+import { EffortPicker } from './EffortPicker';
+import { Button } from './Button';
 import { colors } from '../constants/theme';
 
 interface InputPanelProps {
@@ -11,7 +11,7 @@ interface InputPanelProps {
   onLoad: (peso: number, reps: number, esfuerzo: EffortLevel) => void;
 }
 
-export default function InputPanel({ set, onLoad }: InputPanelProps) {
+export function InputPanel({ set, onLoad }: InputPanelProps) {
   const [peso, setPeso] = useState<number>(set.peso_sugerido);
   const [reps, setReps] = useState<number>(set.reps_min);
   const [esfuerzo, setEsfuerzo] = useState<EffortLevel>(0);

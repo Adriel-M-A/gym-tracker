@@ -13,7 +13,7 @@ interface StepperProps {
   variant?: 'header' | 'input';
 }
 
-export default function Stepper({ 
+export function Stepper({ 
   value, 
   onChange, 
   step = 0.25, 
