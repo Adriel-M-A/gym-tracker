@@ -5,6 +5,9 @@ import { WorkoutSession, EffortLevel } from '../types/workout';
 
 interface WorkoutState {
   session: WorkoutSession | null;
+  timerStartTime: number | null;
+  timerElapsedSeconds: number;
+  timerIsRunning: boolean;
   setEnergia: (energia: number) => void;
   setSuenio: (suenio: number) => void;
   updateSet: (
@@ -16,12 +19,18 @@ interface WorkoutState {
   ) => void;
   importSession: (newSession: WorkoutSession) => void;
   resetSession: () => void;
+  startTimer: () => void;
+  pauseTimer: () => void;
+  resetTimer: () => void;
 }
 
 export const useWorkoutStore = create<WorkoutState>()(
   persist(
     (set) => ({
       session: null,
+      timerStartTime: null,
+      timerElapsedSeconds: 0,
+      timerIsRunning: false,
       setEnergia: (energia: number) =>
         set((state) => {
           if (!state.session) return {};
@@ -69,9 +78,43 @@ export const useWorkoutStore = create<WorkoutState>()(
               ...state.session,
               energia: null,
               suenio: null,
+              duracion_minutos: 0,
               ejercicios: cleanEjercicios,
             },
           };
+        }),
+      startTimer: () =>
+        set((state) => {
+          if (state.timerIsRunning) return {};
+          return {
+            timerIsRunning: true,
+            timerStartTime: Date.now(),
+          };
+        }),
+      pauseTimer: () =>
+        set((state) => {
+          if (!state.timerIsRunning || state.timerStartTime === null) return {};
+          const session = state.session;
+          const additionalSeconds = Math.floor((Date.now() - state.timerStartTime) / 1000);
+          const totalSeconds = state.timerElapsedSeconds + additionalSeconds;
+          const totalMinutes = Math.max(1, Math.round(totalSeconds / 60));
+
+          const newSession = session
+            ? { ...session, duracion_minutos: totalMinutes }
+            : null;
+
+          return {
+            timerIsRunning: false,
+            timerStartTime: null,
+            timerElapsedSeconds: totalSeconds,
+            session: newSession,
+          };
+        }),
+      resetTimer: () =>
+        set({
+          timerStartTime: null,
+          timerElapsedSeconds: 0,
+          timerIsRunning: false,
         }),
     }),
     {

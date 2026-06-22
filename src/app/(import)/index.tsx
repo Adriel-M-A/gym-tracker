@@ -16,6 +16,14 @@ import { WorkoutSession } from '../../types/workout';
 function validateWorkoutSession(data: any): data is WorkoutSession {
   if (!data || typeof data !== 'object') return false;
   if (typeof data.sesion !== 'number') return false;
+  
+  // Validar o inicializar duracion_minutos
+  if (data.duracion_minutos === undefined) {
+    data.duracion_minutos = 0;
+  } else if (typeof data.duracion_minutos !== 'number') {
+    return false;
+  }
+
   if (!Array.isArray(data.ejercicios)) return false;
 
   for (const ej of data.ejercicios) {
@@ -77,6 +85,7 @@ export default function ImportScreen() {
   const session = useWorkoutStore(state => state.session);
   const importSession = useWorkoutStore(state => state.importSession);
   const resetSession = useWorkoutStore(state => state.resetSession);
+  const resetTimer = useWorkoutStore(state => state.resetTimer);
 
   const totalEjercicios = session ? session.ejercicios.length : 0;
   const totalSeries = session ? session.ejercicios.reduce((acc, ej) => acc + ej.series.length, 0) : 0;
@@ -117,6 +126,7 @@ export default function ImportScreen() {
 
       if (validateWorkoutSession(parsed)) {
         importSession(parsed);
+        resetTimer(); // Reiniciamos el cronómetro al importar nueva sesión
         Alert.alert("¡Éxito!", "Sesión de entrenamiento importada correctamente.");
       } else {
         Alert.alert("Archivo no compatible", "El archivo JSON no tiene un formato de sesión válido.");
@@ -136,9 +146,32 @@ export default function ImportScreen() {
         return;
       }
 
-      const fileName = `entrenamiento-sesion-${session.sesion}.json`;
+      // Detener el cronómetro y actualizar la duración si sigue en marcha
+      let finalSession = useWorkoutStore.getState().session;
+      const { timerIsRunning, timerStartTime, timerElapsedSeconds } = useWorkoutStore.getState();
+      
+      if (timerIsRunning && timerStartTime !== null && finalSession) {
+        const additionalSeconds = Math.floor((Date.now() - timerStartTime) / 1000);
+        const totalSeconds = timerElapsedSeconds + additionalSeconds;
+        const totalMinutes = Math.max(1, Math.round(totalSeconds / 60));
+        
+        finalSession = {
+          ...finalSession,
+          duracion_minutos: totalMinutes,
+        };
+      } else if (finalSession) {
+        // Si no está corriendo pero hay tiempo acumulado
+        const totalMinutes = Math.max(1, Math.round(timerElapsedSeconds / 60));
+        finalSession = {
+          ...finalSession,
+          // Si el cronómetro no se usó nunca, mantemos el 0 o el valor que ya traiga
+          duracion_minutos: timerElapsedSeconds > 0 ? totalMinutes : finalSession.duracion_minutos,
+        };
+      }
+
+      const fileName = `entrenamiento-sesion-${finalSession!.sesion}.json`;
       const fileUri = `${FileSystem.cacheDirectory}${fileName}`;
-      const jsonString = JSON.stringify(session, null, 2);
+      const jsonString = JSON.stringify(finalSession, null, 2);
 
       await FileSystem.writeAsStringAsync(fileUri, jsonString, {
         encoding: FileSystem.EncodingType.UTF8,
@@ -146,8 +179,14 @@ export default function ImportScreen() {
 
       await Sharing.shareAsync(fileUri, {
         mimeType: 'application/json',
-        dialogTitle: `Exportar Sesión ${session.sesion}`,
+        dialogTitle: `Exportar Sesión ${finalSession!.sesion}`,
       });
+
+      // Limpiamos la app (cerramos la sesión actual y reseteamos el cronómetro)
+      useWorkoutStore.setState({ session: null });
+      resetTimer();
+
+      Alert.alert("¡Exportado!", "El entrenamiento fue exportado y la sesión activa ha sido cerrada.");
     } catch (error) {
       Alert.alert("Error al exportar", "No se pudo preparar el archivo para compartir.");
       console.error(error);
@@ -166,6 +205,7 @@ export default function ImportScreen() {
           style: "destructive", 
           onPress: () => {
             resetSession();
+            resetTimer(); // También reinicia el cronómetro
             Alert.alert("Sesión reiniciada", "Se restableció el entrenamiento al estado inicial.");
           } 
         }

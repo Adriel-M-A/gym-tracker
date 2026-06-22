@@ -2,6 +2,7 @@
   "sesion": 2,
   "energia": null,
   "suenio": null,
+  "duracion_minutos": 0,
   "ejercicios": [
     {
       "nombre": "Dorsalera o Dominadas",

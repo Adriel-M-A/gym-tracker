@@ -27,5 +27,6 @@ export interface WorkoutSession {
   sesion: number;
   energia: number | null;   // 1-5
   suenio: number | null;    // decimal, ej: 7.5
+  duracion_minutos: number; // minutos de entrenamiento, default 0
   ejercicios: ExerciseData[];
 }
