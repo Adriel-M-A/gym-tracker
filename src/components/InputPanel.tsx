@@ -14,7 +14,11 @@ interface InputPanelProps {
 export function InputPanel({ set, onLoad }: InputPanelProps) {
   const [peso, setPeso] = useState<number>(set.peso !== null ? set.peso : set.peso_sugerido);
   const [reps, setReps] = useState<number>(set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min);
-  const [esfuerzo, setEsfuerzo] = useState<EffortLevel>(set.esfuerzo || 0);
+  const [esfuerzo, setEsfuerzo] = useState<EffortLevel>(
+    set.esfuerzo !== 0
+      ? set.esfuerzo
+      : (set.serie_controlada === 1 ? 0 : set.esfuerzo_sugerido)
+  );
 
   return (
     <View style={styles.container}>

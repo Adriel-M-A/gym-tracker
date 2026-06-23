@@ -18,6 +18,10 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
     : `${set.reps_sugeridas_min}/${set.reps_sugeridas_max}`;
   const sugeridoTexto = `${set.peso_sugerido} kg × ${sugeridoReps}`;
 
+  const esfuerzoVisual = set.esfuerzo > 0 
+    ? set.esfuerzo 
+    : (set.serie_controlada === 1 ? 0 : set.esfuerzo_sugerido);
+
   const handleRowPress = () => {
     onSelect();
   };
@@ -117,9 +121,9 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
             <Text style={styles.textRealizadoActive}>
               {set.peso !== null ? set.peso : set.peso_sugerido} KG × {set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min}
             </Text>
-            {set.esfuerzo > 0 && (
+            {esfuerzoVisual > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>
-                <Text style={styles.effortBadgeTextReal}>{set.esfuerzo}</Text>
+                <Text style={styles.effortBadgeTextReal}>{esfuerzoVisual}</Text>
               </View>
             )}
           </View>

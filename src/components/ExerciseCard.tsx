@@ -43,20 +43,27 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
 
   const completadas = exercise.series.filter(s => s.peso !== null && s.repeticiones !== null).length;
   const total = exercise.series.length;
+  const isFinished = completadas === total && total > 0;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, isFinished && styles.cardFinished]}>
       {/* Header con expand/collapse */}
       <Pressable
         onPress={handleToggleExpand}
         style={({ pressed }) => [
           styles.header, 
           isExpanded && styles.headerExpanded,
-          pressed && styles.headerPressed
+          pressed && styles.headerPressed,
+          isFinished && styles.headerFinished
         ]}
       >
         <View style={styles.headerLeft}>
-          <Text style={styles.title}>{exercise.nombre}</Text>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, isFinished && styles.titleFinished]}>{exercise.nombre}</Text>
+            {isFinished && (
+              <MaterialIcons name="check-circle" size={18} color={colors.textSecondary} />
+            )}
+          </View>
           <View style={styles.headerMeta}>
             <View style={styles.metaItem}>
               <MaterialIcons name="sync" size={14} color={colors.textSecondary} />
@@ -121,6 +128,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
     overflow: 'hidden',
+  },
+  cardFinished: {
+    backgroundColor: colors.surfaceContainerLow,
+    opacity: 0.85,
+    borderWidth: 1,
+    borderColor: colors.border,
+    boxShadow: '0 0 0 rgba(0,0,0,0)',
+  },
+  headerFinished: {
+    backgroundColor: 'transparent',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  titleFinished: {
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
