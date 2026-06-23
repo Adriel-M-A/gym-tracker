@@ -16,6 +16,7 @@ import { WorkoutSession } from '../../types/workout';
 function validateWorkoutSession(data: any): data is WorkoutSession {
   if (!data || typeof data !== 'object') return false;
   if (typeof data.dia_rutina !== 'number' || data.dia_rutina < 1 || data.dia_rutina > 4) return false;
+  if (data.nombre_dia !== undefined && typeof data.nombre_dia !== 'string') return false;
   
   if (data.duracion_minutos === undefined) {
     data.duracion_minutos = null;
@@ -203,7 +204,7 @@ export default function ImportScreen() {
         {/* Tarjeta de estado de la sesión activa */}
         <View style={styles.card}>
           <Text style={styles.cardHeader}>SESIÓN ACTIVA</Text>
-          <Text style={styles.cardTitle}>{session ? `Día ${session.dia_rutina}` : "Sin Sesión"}</Text>
+          <Text style={styles.cardTitle}>{session ? (session.nombre_dia || `Día ${session.dia_rutina}`) : "Sin Sesión"}</Text>
           
           <View style={styles.statsRow}>
             <View style={styles.statItem}>

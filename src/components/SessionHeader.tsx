@@ -107,7 +107,7 @@ export function SessionHeader() {
         <View style={styles.cardContainer}>
           <Stepper 
             label="Sueño (hs)" 
-            value={suenioHoras ?? 7.5} 
+            value={suenioHoras ?? 7} 
             onChange={setSuenioHoras} 
             step={0.5} 
             min={0} 

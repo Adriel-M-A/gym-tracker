@@ -1,0 +1,215 @@
+{
+  "dia_rutina": 4,
+  "nombre_dia": "Hombros y Brazos",
+  "fecha": null,
+  "energia": null,
+  "suenio_horas": null,
+  "peso_corporal": null,
+  "duracion_minutos": null,
+  "ejercicios": [
+    {
+      "ejercicio_id": 13,
+      "nombre": "Press militar con mancuernas sentado",
+      "categoria": "Fuerza (Compuesto)",
+      "descanso_min_seg": 120,
+      "descanso_max_seg": 180,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 14.0,
+          "reps_sugeridas_min": 8,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 14.0,
+          "reps_sugeridas_min": 8,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 16.0,
+          "reps_sugeridas_min": 8,
+          "reps_sugeridas_max": 8,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 4,
+          "peso_sugerido": 16.0,
+          "reps_sugeridas_min": 8,
+          "reps_sugeridas_max": 8,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": "Consolidar carga en 16kg para asegurar llegar a 8 reps sin fallo. Control excéntrico."
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 19,
+      "nombre": "Vuelos laterales con mancuernas",
+      "categoria": "Fuerza (Aislado)",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 8.0,
+          "reps_sugeridas_min": 12,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 8.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 8.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 4,
+          "peso_sugerido": 8.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": "Mantener carga. Enfocar en control excéntrico."
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 4,
+      "nombre": "Curl de bíceps alternado con mancuernas",
+      "categoria": "Fuerza (Aislado)",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 10.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 12.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 10.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 3,
+      "nombre": "Copa de tríceps tras nuca con mancuerna",
+      "categoria": "Fuerza (Aislado)",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 12.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 14.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 14.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": "Consolidar progreso en 14kg. Mantener control en la bajada."
+        }
+      ]
+    }
+  ]
+}

@@ -65,7 +65,7 @@ export default function WorkoutScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: `Día ${session.dia_rutina}` }} />
+      <Stack.Screen options={{ title: session.nombre_dia || `Día ${session.dia_rutina}` }} />
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}

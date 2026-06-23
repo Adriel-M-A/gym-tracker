@@ -61,7 +61,13 @@ export const useWorkoutStore = create<WorkoutState>()(
           return { session: { ...state.session, ejercicios: newArray } };
         }),
       importSession: (newSession: WorkoutSession) =>
-        set({ session: newSession }),
+        set({
+          session: {
+            ...newSession,
+            energia: newSession.energia ?? 3,
+            suenio_horas: newSession.suenio_horas ?? 7,
+          },
+        }),
       resetSession: () =>
         set((state) => {
           if (!state.session) return {};
@@ -79,8 +85,8 @@ export const useWorkoutStore = create<WorkoutState>()(
           return {
             session: {
               ...state.session,
-              energia: null,
-              suenio_horas: null,
+              energia: 3,
+              suenio_horas: 7,
               duracion_minutos: 0,
               ejercicios: cleanArray(state.session.ejercicios),
             },

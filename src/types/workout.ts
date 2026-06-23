@@ -28,6 +28,7 @@ export interface ExerciseData {
 
 export interface WorkoutSession {
   dia_rutina: number;
+  nombre_dia?: string;
   fecha: string | null;
   energia: number | null;   // 1-5
   suenio_horas: number | null;    // decimal, ej: 7.5
