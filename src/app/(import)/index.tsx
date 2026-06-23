@@ -15,78 +15,43 @@ import { WorkoutSession } from '../../types/workout';
  */
 function validateWorkoutSession(data: any): data is WorkoutSession {
   if (!data || typeof data !== 'object') return false;
-  if (typeof data.sesion !== 'number') return false;
+  if (typeof data.dia_rutina !== 'number' || data.dia_rutina < 1 || data.dia_rutina > 4) return false;
   
-  // Validar o inicializar duracion_minutos
   if (data.duracion_minutos === undefined) {
-    data.duracion_minutos = 0;
-  } else if (typeof data.duracion_minutos !== 'number') {
+    data.duracion_minutos = null;
+  } else if (data.duracion_minutos !== null && typeof data.duracion_minutos !== 'number') {
     return false;
   }
 
+  if (data.energia !== undefined && data.energia !== null && typeof data.energia !== 'number') return false;
+  if (data.suenio_horas !== undefined && data.suenio_horas !== null && typeof data.suenio_horas !== 'number') return false;
+  if (data.peso_corporal !== undefined && data.peso_corporal !== null && typeof data.peso_corporal !== 'number') return false;
+
   if (!Array.isArray(data.ejercicios)) return false;
-  if (data.core !== undefined && !Array.isArray(data.core)) return false;
 
-  const validateExerciseArray = (arr: any[]) => {
-    for (const ej of arr) {
-      if (typeof ej.nombre !== 'string') return false;
-      if (typeof ej.descanso !== 'string') return false;
-      if (!Array.isArray(ej.series)) return false;
+  for (const ej of data.ejercicios) {
+    if (typeof ej.ejercicio_id !== 'number') return false;
+    if (typeof ej.nombre !== 'string') return false;
+    if (typeof ej.categoria !== 'string') return false;
+    if (typeof ej.descanso_min_seg !== 'number') return false;
+    if (typeof ej.descanso_max_seg !== 'number') return false;
+    if (!Array.isArray(ej.series)) return false;
 
-      for (const set of ej.series) {
-        if (typeof set.numero_serie !== 'number' && typeof set.serie === 'number') {
-          set.numero_serie = set.serie;
-        }
-        if (typeof set.numero_serie !== 'number') return false;
-        if (typeof set.peso_sugerido !== 'number') return false;
-        
-        // Adaptar reps_min/reps_max a reps_sugeridas_min/reps_sugeridas_max
-        const min = set.reps_sugeridas_min !== undefined ? set.reps_sugeridas_min : set.reps_min;
-        const max = set.reps_sugeridas_max !== undefined ? set.reps_sugeridas_max : set.reps_max;
-        if (typeof min !== 'number' || typeof max !== 'number') return false;
+    for (const set of ej.series) {
+      if (typeof set.numero_serie !== 'number') return false;
+      if (set.peso_sugerido !== null && typeof set.peso_sugerido !== 'number') return false;
+      if (typeof set.reps_sugeridas_min !== 'number') return false;
+      if (typeof set.reps_sugeridas_max !== 'number') return false;
+      if (typeof set.esfuerzo_sugerido !== 'number') return false;
+      if (set.serie_controlada !== 0 && set.serie_controlada !== 1) return false;
 
-        set.reps_sugeridas_min = min;
-        set.reps_sugeridas_max = max;
-
-        // Adaptar serie_controlada (de boolean a 0 | 1)
-        if (set.serie_controlada === undefined) {
-          set.serie_controlada = 0;
-        } else if (typeof set.serie_controlada === 'boolean') {
-          set.serie_controlada = set.serie_controlada ? 1 : 0;
-        } else if (set.serie_controlada !== 0 && set.serie_controlada !== 1) {
-          return false;
-        }
-
-        // Adaptar esfuerzo_sugerido
-        if (set.esfuerzo_sugerido === undefined || set.esfuerzo_sugerido === null) {
-          set.esfuerzo_sugerido = 0;
-        }
-
-        // Adaptar es_bw
-        if (set.es_bw === undefined) {
-          set.es_bw = 0;
-        } else if (set.es_bw !== 0 && set.es_bw !== 1) {
-          return false;
-        }
-
-        // Adaptar valores cargados por el usuario
-        const peso = set.peso !== undefined ? set.peso : set.peso_real;
-        const reps = set.repeticiones !== undefined ? set.repeticiones : set.reps_reales;
-        const esfuerzo = set.esfuerzo !== undefined ? set.esfuerzo : set.esfuerzo_real;
-
-        set.peso = peso !== undefined ? peso : null;
-        set.repeticiones = reps !== undefined ? reps : null;
-        set.esfuerzo = esfuerzo !== undefined ? esfuerzo : 0;
-        set.notas = set.notas !== undefined ? set.notas : (set.nota !== undefined ? set.nota : null);
-      }
+      // Adaptar valores cargados por el usuario
+      set.peso = set.peso !== undefined ? set.peso : null;
+      set.repeticiones = set.repeticiones !== undefined ? set.repeticiones : null;
+      set.esfuerzo = set.esfuerzo !== undefined ? set.esfuerzo : null;
+      set.notas = set.notas !== undefined ? set.notas : null;
     }
-    return true;
-  };
-
-  if (!validateExerciseArray(data.ejercicios)) return false;
-  if (data.core && !validateExerciseArray(data.core)) return false;
-  
-  if (!data.core) data.core = [];
+  }
 
   return true;
 }
@@ -97,17 +62,12 @@ export default function ImportScreen() {
   const resetSession = useWorkoutStore(state => state.resetSession);
   const resetTimer = useWorkoutStore(state => state.resetTimer);
 
-  const totalEjercicios = session ? session.ejercicios.length + (session.core?.length || 0) : 0;
+  const totalEjercicios = session ? session.ejercicios.length : 0;
   const totalSeries = session 
-    ? session.ejercicios.reduce((acc, ej) => acc + ej.series.length, 0) + 
-      (session.core || []).reduce((acc, ej) => acc + ej.series.length, 0)
+    ? session.ejercicios.reduce((acc, ej) => acc + ej.series.length, 0)
     : 0;
   const seriesCompletadas = session
     ? session.ejercicios.reduce(
-        (acc, ej) => acc + ej.series.filter(s => s.peso !== null && s.repeticiones !== null).length,
-        0
-      ) +
-      (session.core || []).reduce(
         (acc, ej) => acc + ej.series.filter(s => s.peso !== null && s.repeticiones !== null).length,
         0
       )
@@ -167,6 +127,9 @@ export default function ImportScreen() {
       let finalSession = useWorkoutStore.getState().session;
       const { timerIsRunning, timerStartTime, timerElapsedSeconds } = useWorkoutStore.getState();
       
+      const today = new Date();
+      const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      
       if (timerIsRunning && timerStartTime !== null && finalSession) {
         const additionalSeconds = Math.floor((Date.now() - timerStartTime) / 1000);
         const totalSeconds = timerElapsedSeconds + additionalSeconds;
@@ -174,6 +137,7 @@ export default function ImportScreen() {
         
         finalSession = {
           ...finalSession,
+          fecha: dateString,
           duracion_minutos: totalMinutes,
         };
       } else if (finalSession) {
@@ -181,12 +145,13 @@ export default function ImportScreen() {
         const totalMinutes = Math.max(1, Math.round(timerElapsedSeconds / 60));
         finalSession = {
           ...finalSession,
+          fecha: dateString,
           // Si el cronómetro no se usó nunca, mantemos el 0 o el valor que ya traiga
           duracion_minutos: timerElapsedSeconds > 0 ? totalMinutes : finalSession.duracion_minutos,
         };
       }
 
-      const fileName = `entrenamiento-sesion-${finalSession!.sesion}.json`;
+      const fileName = `entrenamiento-dia-${finalSession!.dia_rutina}.json`;
       const fileUri = `${FileSystem.cacheDirectory}${fileName}`;
       const jsonString = JSON.stringify(finalSession, null, 2);
 
@@ -196,7 +161,7 @@ export default function ImportScreen() {
 
       await Sharing.shareAsync(fileUri, {
         mimeType: 'application/json',
-        dialogTitle: `Exportar Sesión ${finalSession!.sesion}`,
+        dialogTitle: `Exportar Día ${finalSession!.dia_rutina}`,
       });
 
       // Limpiamos la app (cerramos la sesión actual y reseteamos el cronómetro)
@@ -238,7 +203,7 @@ export default function ImportScreen() {
         {/* Tarjeta de estado de la sesión activa */}
         <View style={styles.card}>
           <Text style={styles.cardHeader}>SESIÓN ACTIVA</Text>
-          <Text style={styles.cardTitle}>{session ? `Día ${session.sesion}` : "Sin Sesión"}</Text>
+          <Text style={styles.cardTitle}>{session ? `Día ${session.dia_rutina}` : "Sin Sesión"}</Text>
           
           <View style={styles.statsRow}>
             <View style={styles.statItem}>

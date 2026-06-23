@@ -7,9 +7,9 @@ import { useWorkoutStore } from '../store/workoutStore';
 
 export function SessionHeader() {
   const energia = useWorkoutStore(state => state.session?.energia);
-  const suenio = useWorkoutStore(state => state.session?.suenio);
+  const suenioHoras = useWorkoutStore(state => state.session?.suenio_horas);
   const setEnergia = useWorkoutStore(state => state.setEnergia);
-  const setSuenio = useWorkoutStore(state => state.setSuenio);
+  const setSuenioHoras = useWorkoutStore(state => state.setSuenioHoras);
 
   // Estado y acciones del cronómetro
   const timerIsRunning = useWorkoutStore(state => state.timerIsRunning);
@@ -107,8 +107,8 @@ export function SessionHeader() {
         <View style={styles.cardContainer}>
           <Stepper 
             label="Sueño (hs)" 
-            value={suenio ?? 7.5} 
-            onChange={setSuenio} 
+            value={suenioHoras ?? 7.5} 
+            onChange={setSuenioHoras} 
             step={0.5} 
             min={0} 
             variant="header"

@@ -1,7 +1,7 @@
 import { FlatList, View, StyleSheet, Text } from "react-native";
 import { Stack, router } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { ExerciseCard } from "../../components/ExerciseCard";
 import { SessionHeader } from "../../components/SessionHeader";
 import { Button } from "../../components/Button";
@@ -10,22 +10,30 @@ import { useWorkoutStore } from "../../store/workoutStore";
 
 export default function WorkoutScreen() {
   const session = useWorkoutStore(state => state.session);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (session && (typeof (session as any).sesion === 'number' || !session.ejercicios.every((ej: any) => 'categoria' in ej))) {
+      // Limpiar sesión con formato antiguo persistida en AsyncStorage para evitar errores
+      useWorkoutStore.setState({ session: null });
+    }
+  }, [session]);
 
   const listData = useMemo(() => {
     if (!session) return [];
     
     const data: any[] = [];
+    let lastCategory = '';
     
     session.ejercicios.forEach((ej, index) => {
-      data.push({ itemType: 'ejercicio', index, type: 'ejercicios', key: `ej-${ej.nombre}-${index}` });
+      const cat = ej.categoria || 'Entrenamiento';
+      if (cat !== lastCategory) {
+        data.push({ itemType: 'category_separator', category: cat, key: `sep-${cat}-${index}` });
+        lastCategory = cat;
+      }
+      data.push({ itemType: 'ejercicio', index, key: `ej-${ej.nombre}-${index}` });
     });
-    
-    if (session.core && session.core.length > 0) {
-      data.push({ itemType: 'core_separator', key: 'core_separator' });
-      session.core.forEach((ej, index) => {
-        data.push({ itemType: 'ejercicio', index, type: 'core', key: `core-${ej.nombre}-${index}` });
-      });
-    }
     
     return data;
   }, [session]);
@@ -57,17 +65,18 @@ export default function WorkoutScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: `Sesión ${session.sesion}` }} />
+      <Stack.Screen options={{ title: `Día ${session.dia_rutina}` }} />
       <View style={styles.container}>
         <FlatList
+          ref={flatListRef}
           data={listData}
           keyExtractor={(item) => item.key}
-          renderItem={({ item }) => {
-            if (item.itemType === 'core_separator') {
+          renderItem={({ item, index: flatListIndex }) => {
+            if (item.itemType === 'category_separator') {
               return (
                 <View style={styles.separatorContainer}>
                   <View style={styles.separatorLine} />
-                  <Text style={styles.separatorText}>BLOQUE COMPLEMENTARIO</Text>
+                  <Text style={styles.separatorText}>{item.category.toUpperCase()}</Text>
                   <View style={styles.separatorLine} />
                 </View>
               );
@@ -75,13 +84,39 @@ export default function WorkoutScreen() {
             return (
               <ExerciseCard 
                 exerciseIndex={item.index} 
-                type={item.type as 'ejercicios' | 'core'} 
+                isExpanded={expandedIndex === item.index}
+                onToggleExpand={() => {
+                  const isExpanding = expandedIndex !== item.index;
+                  setExpandedIndex(isExpanding ? item.index : null);
+                  
+                  if (isExpanding) {
+                    setTimeout(() => {
+                      flatListRef.current?.scrollToIndex({
+                        index: flatListIndex,
+                        animated: true,
+                        viewPosition: 0,
+                        viewOffset: 16
+                      });
+                    }, 150);
+                  }
+                }}
               />
             );
           }}
           ListHeaderComponent={<SessionHeader />}
           contentContainerStyle={styles.scrollContent}
           contentInsetAdjustmentBehavior="automatic"
+          onScrollToIndexFailed={(info) => {
+            const wait = new Promise(resolve => setTimeout(resolve, 100));
+            wait.then(() => {
+              flatListRef.current?.scrollToIndex({ 
+                index: info.index, 
+                animated: true, 
+                viewPosition: 0, 
+                viewOffset: 16 
+              });
+            });
+          }}
         />
       </View>
     </>

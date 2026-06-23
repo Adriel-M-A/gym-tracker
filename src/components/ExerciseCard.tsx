@@ -9,17 +9,27 @@ import { useWorkoutStore } from '../store/workoutStore';
 
 interface ExerciseCardProps {
   exerciseIndex: number;
-  type?: 'ejercicios' | 'core';
+  isExpanded: boolean;
+  onToggleExpand: () => void;
 }
 
-export function ExerciseCard({ exerciseIndex, type = 'ejercicios' }: ExerciseCardProps) {
-  const exercise = useWorkoutStore(state => {
-    const targetArray = type === 'core' ? state.session!.core : state.session!.ejercicios;
-    return targetArray?.[exerciseIndex] || state.session!.ejercicios[exerciseIndex];
-  });
+export function ExerciseCard({ exerciseIndex, isExpanded, onToggleExpand }: ExerciseCardProps) {
+  const exercise = useWorkoutStore(state => state.session!.ejercicios[exerciseIndex]);
   const updateSet = useWorkoutStore(state => state.updateSet);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [prevIsExpanded, setPrevIsExpanded] = useState(isExpanded);
+
+  if (isExpanded !== prevIsExpanded) {
+    setPrevIsExpanded(isExpanded);
+    if (isExpanded) {
+      const firstPendingIndex = exercise.series.findIndex(
+        s => s.peso === null || s.repeticiones === null
+      );
+      setSelectedIndex(firstPendingIndex !== -1 ? firstPendingIndex : null);
+    } else {
+      setSelectedIndex(null);
+    }
+  }
 
   const handleSelect = (index: number) => {
     if (selectedIndex === index) {
@@ -30,18 +40,26 @@ export function ExerciseCard({ exerciseIndex, type = 'ejercicios' }: ExerciseCar
   };
 
   const handleToggleExpand = () => {
-    if (!isExpanded) {
-      setSelectedIndex(null);
-    }
-    setIsExpanded(!isExpanded);
+    onToggleExpand();
   };
 
 
 
-  const handleLoad = (peso: number, reps: number, esfuerzo: EffortLevel) => {
+  const handleLoad = (peso: number | null, reps: number | null, esfuerzo: EffortLevel | null) => {
     if (selectedIndex !== null) {
-      updateSet(type, exerciseIndex, selectedIndex, peso, reps, esfuerzo);
-      setSelectedIndex(null);
+      updateSet(exerciseIndex, selectedIndex, peso, reps, esfuerzo);
+      
+      let nextIndex = exercise.series.findIndex(
+        (s, i) => i > selectedIndex && (s.peso === null || s.repeticiones === null)
+      );
+      
+      if (nextIndex === -1) {
+        nextIndex = exercise.series.findIndex(
+          (s, i) => i !== selectedIndex && (s.peso === null || s.repeticiones === null)
+        );
+      }
+      
+      setSelectedIndex(nextIndex !== -1 ? nextIndex : null);
     }
   };
 
@@ -78,7 +96,11 @@ export function ExerciseCard({ exerciseIndex, type = 'ejercicios' }: ExerciseCar
             </View>
             <View style={styles.metaItem}>
               <MaterialIcons name="timer" size={14} color={colors.textSecondary} />
-              <Text style={styles.metaText}>Descanso: {exercise.descanso}</Text>
+              <Text style={styles.metaText}>
+                Descanso: {exercise.descanso_min_seg !== undefined 
+                  ? formatDescanso(exercise.descanso_min_seg, exercise.descanso_max_seg)
+                  : (exercise as any).descanso || '2 min'}
+              </Text>
             </View>
           </View>
         </View>
@@ -125,6 +147,22 @@ export function ExerciseCard({ exerciseIndex, type = 'ejercicios' }: ExerciseCar
       )}
     </View>
   );
+}
+
+function formatSeconds(s: number) {
+  if (s % 60 === 0) {
+    return `${s / 60} min`;
+  }
+  const mins = Math.floor(s / 60);
+  const secs = s % 60;
+  return mins > 0 ? `${mins}m ${secs}s` : `${secs} seg`;
+}
+
+function formatDescanso(minSeg: number, maxSeg: number): string {
+  if (minSeg === maxSeg) {
+    return formatSeconds(minSeg);
+  }
+  return `${formatSeconds(minSeg)} a ${formatSeconds(maxSeg)}`;
 }
 
 const styles = StyleSheet.create({

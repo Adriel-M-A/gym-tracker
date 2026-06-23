@@ -1,0 +1,304 @@
+{
+  "dia_rutina": 3,
+  "fecha": null,
+  "energia": null,
+  "suenio_horas": null,
+  "peso_corporal": null,
+  "duracion_minutos": null,
+  "ejercicios": [
+    {
+      "ejercicio_id": 17,
+      "nombre": "Sentadilla libre",
+      "categoria": "Fuerza (Compuesto)",
+      "descanso_min_seg": 120,
+      "descanso_max_seg": 180,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 35.0,
+          "reps_sugeridas_min": 6,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 45.0,
+          "reps_sugeridas_min": 6,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 50.0,
+          "reps_sugeridas_min": 6,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 4,
+          "peso_sugerido": 50.0,
+          "reps_sugeridas_min": 6,
+          "reps_sugeridas_max": 10,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 18,
+      "nombre": "Sillón de cuádriceps",
+      "categoria": "Fuerza (Aislado)",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 27.5,
+          "reps_sugeridas_min": 12,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 32.5,
+          "reps_sugeridas_min": 12,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 35.0,
+          "reps_sugeridas_min": 12,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 2,
+      "nombre": "Camilla de femoral",
+      "categoria": "Fuerza (Aislado)",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 22.5,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 27.5,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 30.0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 12,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 9,
+      "nombre": "Gemelos",
+      "categoria": "Fuerza (Aislado)",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 85.0,
+          "reps_sugeridas_min": 15,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 90.0,
+          "reps_sugeridas_min": 15,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 90.0,
+          "reps_sugeridas_min": 15,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 1,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 4,
+          "peso_sugerido": 90.0,
+          "reps_sugeridas_min": 15,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 3,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": "Mantener carga. Enfocar en control excéntrico."
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 20,
+      "nombre": "Crunch en banco declinado con peso",
+      "categoria": "Core",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 7.5,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 7.5,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 7.5,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 15,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        }
+      ]
+    },
+    {
+      "ejercicio_id": 21,
+      "nombre": "Plancha frontal extendida",
+      "categoria": "Core",
+      "descanso_min_seg": 60,
+      "descanso_max_seg": 90,
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 0.0,
+          "reps_sugeridas_min": 30,
+          "reps_sugeridas_max": 45,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 0.0,
+          "reps_sugeridas_min": 30,
+          "reps_sugeridas_max": 45,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 0.0,
+          "reps_sugeridas_min": 30,
+          "reps_sugeridas_max": 45,
+          "esfuerzo_sugerido": 0,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0,
+          "serie_controlada": 0,
+          "notas": null
+        }
+      ]
+    }
+  ]
+}

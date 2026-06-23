@@ -4,16 +4,30 @@ import { colors } from '../constants/theme';
 import { EffortLevel } from '../types/workout';
 
 interface EffortPickerProps {
-  value: EffortLevel;
-  onChange: (level: EffortLevel) => void;
+  value: EffortLevel | null;
+  onChange: (level: EffortLevel | null) => void;
 }
 
 const EFFORT_LEVELS: EffortLevel[] = [1, 2, 3, 4, 5];
 
+const RIR_LEGENDS: Record<number, string> = {
+  0: "Normal (RIR 3+)",
+  1: "Leve (RIR 2)",
+  2: "Moderado (RIR 1-2)",
+  3: "Alto (RIR 0-1)",
+  4: "Límite (RIR 0)",
+  5: "Fallo",
+};
+
+const getLegend = (val: EffortLevel | null) => {
+  if (val === null || val === 0) return RIR_LEGENDS[0];
+  return RIR_LEGENDS[val] || "";
+};
+
 export function EffortPicker({ value, onChange }: EffortPickerProps) {
   const handlePress = (level: EffortLevel) => {
     if (value === level) {
-      onChange(0); // deseleccionar
+      onChange(null); // deseleccionar
     } else {
       onChange(level);
     }
@@ -48,6 +62,7 @@ export function EffortPicker({ value, onChange }: EffortPickerProps) {
           );
         })}
       </View>
+      <Text style={styles.legend}>{getLegend(value)}</Text>
     </View>
   );
 }
@@ -100,6 +115,13 @@ const styles = StyleSheet.create({
   },
   textSelected: {
     color: '#ffffff',
+  },
+  legend: {
+    fontFamily: 'Lexend_600SemiBold',
+    color: colors.textPrimary,
+    fontSize: 12,
+    marginTop: 12,
+    textAlign: 'center',
   },
 });
 

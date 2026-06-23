@@ -16,9 +16,11 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
   const sugeridoReps = set.reps_sugeridas_min === set.reps_sugeridas_max
     ? `${set.reps_sugeridas_min}`
     : `${set.reps_sugeridas_min}/${set.reps_sugeridas_max}`;
-  const sugeridoTexto = `${set.peso_sugerido} kg × ${sugeridoReps}`;
+    
+  const isBW = set.peso_sugerido === 0 || set.peso_sugerido === null;
+  const sugeridoTexto = isBW ? sugeridoReps : `${set.peso_sugerido} kg × ${sugeridoReps}`;
 
-  const esfuerzoVisual = set.esfuerzo > 0 
+  const esfuerzoVisual = (set.esfuerzo !== null && set.esfuerzo > 0)
     ? set.esfuerzo 
     : (set.serie_controlada === 1 ? 0 : set.esfuerzo_sugerido);
 
@@ -80,9 +82,9 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
         <View style={styles.colRealizado}>
           <View style={styles.realizadoInner}>
             <Text style={styles.textRealizado}>
-              {set.peso} KG × {set.repeticiones}
+              {isBW ? set.repeticiones : `${set.peso} KG × ${set.repeticiones}`}
             </Text>
-            {set.esfuerzo > 0 && (
+            {set.esfuerzo !== null && set.esfuerzo > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>
                 <Text style={styles.effortBadgeTextReal}>{set.esfuerzo}</Text>
               </View>
@@ -119,7 +121,10 @@ export function SetRow({ set, isSelected, onSelect }: SetRowProps) {
         <View style={styles.colRealizado}>
           <View style={styles.realizadoInner}>
             <Text style={styles.textRealizadoActive}>
-              {set.peso !== null ? set.peso : set.peso_sugerido} KG × {set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min}
+              {isBW 
+                ? (set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min)
+                : `${set.peso !== null ? set.peso : set.peso_sugerido} KG × ${set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min}`
+              }
             </Text>
             {esfuerzoVisual > 0 && (
               <View style={[styles.effortBadge, styles.effortBadgeReal]}>

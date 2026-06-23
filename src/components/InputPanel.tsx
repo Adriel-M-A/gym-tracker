@@ -8,32 +8,39 @@ import { colors } from '../constants/theme';
 
 interface InputPanelProps {
   set: SetData;
-  onLoad: (peso: number, reps: number, esfuerzo: EffortLevel) => void;
+  onLoad: (peso: number | null, reps: number | null, esfuerzo: EffortLevel | null) => void;
 }
 
 export function InputPanel({ set, onLoad }: InputPanelProps) {
-  const [peso, setPeso] = useState<number>(set.peso !== null ? set.peso : set.peso_sugerido);
+  const isBW = set.peso_sugerido === 0 || set.peso_sugerido === null;
+  const [peso, setPeso] = useState<number>(set.peso !== null ? set.peso : (set.peso_sugerido || 0));
   const [reps, setReps] = useState<number>(set.repeticiones !== null ? set.repeticiones : set.reps_sugeridas_min);
-  const [esfuerzo, setEsfuerzo] = useState<EffortLevel>(
-    set.esfuerzo !== 0
+  const [esfuerzo, setEsfuerzo] = useState<EffortLevel | null>(
+    set.esfuerzo !== null
       ? set.esfuerzo
       : (set.serie_controlada === 1 ? 0 : set.esfuerzo_sugerido)
   );
+
+  const handleLoad = () => {
+    onLoad(isBW ? 0 : peso, reps, esfuerzo);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.steppersRow}>
         {/* Peso: pasos de 0.25 */}
-        <View style={styles.stepperWrapper}>
-          <Stepper 
-            label="Peso (kg)" 
-            value={peso} 
-            onChange={setPeso} 
-            step={0.25} 
-            min={0} 
-            variant="input"
-          />
-        </View>
+        {!isBW && (
+          <View style={styles.stepperWrapper}>
+            <Stepper 
+              label="Peso (kg)" 
+              value={peso} 
+              onChange={setPeso} 
+              step={0.25} 
+              min={0} 
+              variant="input"
+            />
+          </View>
+        )}
         
         {/* Reps: pasos de 1 en 1 */}
         <View style={styles.stepperWrapper}>
@@ -54,7 +61,7 @@ export function InputPanel({ set, onLoad }: InputPanelProps) {
         <Button 
           label="CARGAR SERIE" 
           icon="check" 
-          onPress={() => onLoad(peso, reps, esfuerzo)} 
+          onPress={handleLoad} 
         />
       </View>
     </View>

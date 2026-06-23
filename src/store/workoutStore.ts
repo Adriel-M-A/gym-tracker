@@ -9,14 +9,13 @@ interface WorkoutState {
   timerElapsedSeconds: number;
   timerIsRunning: boolean;
   setEnergia: (energia: number) => void;
-  setSuenio: (suenio: number) => void;
+  setSuenioHoras: (suenio_horas: number) => void;
   updateSet: (
-    type: 'ejercicios' | 'core',
     ejercicioIndex: number,
     serieIndex: number,
     peso: number | null,
     reps: number | null,
-    esfuerzo: EffortLevel
+    esfuerzo: EffortLevel | null
   ) => void;
   importSession: (newSession: WorkoutSession) => void;
   resetSession: () => void;
@@ -37,16 +36,15 @@ export const useWorkoutStore = create<WorkoutState>()(
           if (!state.session) return {};
           return { session: { ...state.session, energia } };
         }),
-      setSuenio: (suenio: number) =>
+      setSuenioHoras: (suenio_horas: number) =>
         set((state) => {
           if (!state.session) return {};
-          return { session: { ...state.session, suenio } };
+          return { session: { ...state.session, suenio_horas } };
         }),
-      updateSet: (type, ejercicioIndex, serieIndex, peso, reps, esfuerzo) =>
+      updateSet: (ejercicioIndex, serieIndex, peso, reps, esfuerzo) =>
         set((state) => {
           if (!state.session) return {};
-          const targetArray = type === 'core' ? state.session.core || [] : state.session.ejercicios;
-          const newArray = targetArray.map((ej, ei) => {
+          const newArray = state.session.ejercicios.map((ej, ei) => {
             if (ei !== ejercicioIndex) return ej;
             const newSeries = ej.series.map((s, si) => {
               if (si !== serieIndex) return s;
@@ -60,11 +58,7 @@ export const useWorkoutStore = create<WorkoutState>()(
             return { ...ej, series: newSeries };
           });
 
-          if (type === 'core') {
-            return { session: { ...state.session, core: newArray } };
-          } else {
-            return { session: { ...state.session, ejercicios: newArray } };
-          }
+          return { session: { ...state.session, ejercicios: newArray } };
         }),
       importSession: (newSession: WorkoutSession) =>
         set({ session: newSession }),
@@ -77,7 +71,7 @@ export const useWorkoutStore = create<WorkoutState>()(
               ...s,
               peso: null,
               repeticiones: null,
-              esfuerzo: 0 as EffortLevel,
+              esfuerzo: null,
             }));
             return { ...ej, series: cleanSeries };
           });
@@ -86,10 +80,9 @@ export const useWorkoutStore = create<WorkoutState>()(
             session: {
               ...state.session,
               energia: null,
-              suenio: null,
+              suenio_horas: null,
               duracion_minutos: 0,
               ejercicios: cleanArray(state.session.ejercicios),
-              core: state.session.core ? cleanArray(state.session.core) : undefined,
             },
           };
         }),
