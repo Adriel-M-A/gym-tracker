@@ -25,59 +25,69 @@ function validateWorkoutSession(data: any): data is WorkoutSession {
   }
 
   if (!Array.isArray(data.ejercicios)) return false;
+  if (data.core !== undefined && !Array.isArray(data.core)) return false;
 
-  for (const ej of data.ejercicios) {
-    if (typeof ej.nombre !== 'string') return false;
-    if (typeof ej.descanso !== 'string') return false;
-    if (!Array.isArray(ej.series)) return false;
+  const validateExerciseArray = (arr: any[]) => {
+    for (const ej of arr) {
+      if (typeof ej.nombre !== 'string') return false;
+      if (typeof ej.descanso !== 'string') return false;
+      if (!Array.isArray(ej.series)) return false;
 
-    for (const set of ej.series) {
-      if (typeof set.numero_serie !== 'number' && typeof set.serie === 'number') {
-        set.numero_serie = set.serie;
+      for (const set of ej.series) {
+        if (typeof set.numero_serie !== 'number' && typeof set.serie === 'number') {
+          set.numero_serie = set.serie;
+        }
+        if (typeof set.numero_serie !== 'number') return false;
+        if (typeof set.peso_sugerido !== 'number') return false;
+        
+        // Adaptar reps_min/reps_max a reps_sugeridas_min/reps_sugeridas_max
+        const min = set.reps_sugeridas_min !== undefined ? set.reps_sugeridas_min : set.reps_min;
+        const max = set.reps_sugeridas_max !== undefined ? set.reps_sugeridas_max : set.reps_max;
+        if (typeof min !== 'number' || typeof max !== 'number') return false;
+
+        set.reps_sugeridas_min = min;
+        set.reps_sugeridas_max = max;
+
+        // Adaptar serie_controlada (de boolean a 0 | 1)
+        if (set.serie_controlada === undefined) {
+          set.serie_controlada = 0;
+        } else if (typeof set.serie_controlada === 'boolean') {
+          set.serie_controlada = set.serie_controlada ? 1 : 0;
+        } else if (set.serie_controlada !== 0 && set.serie_controlada !== 1) {
+          return false;
+        }
+
+        // Adaptar esfuerzo_sugerido
+        if (set.esfuerzo_sugerido === undefined || set.esfuerzo_sugerido === null) {
+          set.esfuerzo_sugerido = 0;
+        }
+
+        // Adaptar es_bw
+        if (set.es_bw === undefined) {
+          set.es_bw = 0;
+        } else if (set.es_bw !== 0 && set.es_bw !== 1) {
+          return false;
+        }
+
+        // Adaptar valores cargados por el usuario
+        const peso = set.peso !== undefined ? set.peso : set.peso_real;
+        const reps = set.repeticiones !== undefined ? set.repeticiones : set.reps_reales;
+        const esfuerzo = set.esfuerzo !== undefined ? set.esfuerzo : set.esfuerzo_real;
+
+        set.peso = peso !== undefined ? peso : null;
+        set.repeticiones = reps !== undefined ? reps : null;
+        set.esfuerzo = esfuerzo !== undefined ? esfuerzo : 0;
+        set.notas = set.notas !== undefined ? set.notas : (set.nota !== undefined ? set.nota : null);
       }
-      if (typeof set.numero_serie !== 'number') return false;
-      if (typeof set.peso_sugerido !== 'number') return false;
-      
-      // Adaptar reps_min/reps_max a reps_sugeridas_min/reps_sugeridas_max
-      const min = set.reps_sugeridas_min !== undefined ? set.reps_sugeridas_min : set.reps_min;
-      const max = set.reps_sugeridas_max !== undefined ? set.reps_sugeridas_max : set.reps_max;
-      if (typeof min !== 'number' || typeof max !== 'number') return false;
-
-      set.reps_sugeridas_min = min;
-      set.reps_sugeridas_max = max;
-
-      // Adaptar serie_controlada (de boolean a 0 | 1)
-      if (set.serie_controlada === undefined) {
-        set.serie_controlada = 0;
-      } else if (typeof set.serie_controlada === 'boolean') {
-        set.serie_controlada = set.serie_controlada ? 1 : 0;
-      } else if (set.serie_controlada !== 0 && set.serie_controlada !== 1) {
-        return false;
-      }
-
-      // Adaptar esfuerzo_sugerido
-      if (set.esfuerzo_sugerido === undefined || set.esfuerzo_sugerido === null) {
-        set.esfuerzo_sugerido = 0;
-      }
-
-      // Adaptar es_bw
-      if (set.es_bw === undefined) {
-        set.es_bw = 0;
-      } else if (set.es_bw !== 0 && set.es_bw !== 1) {
-        return false;
-      }
-
-      // Adaptar valores cargados por el usuario
-      const peso = set.peso !== undefined ? set.peso : set.peso_real;
-      const reps = set.repeticiones !== undefined ? set.repeticiones : set.reps_reales;
-      const esfuerzo = set.esfuerzo !== undefined ? set.esfuerzo : set.esfuerzo_real;
-
-      set.peso = peso !== undefined ? peso : null;
-      set.repeticiones = reps !== undefined ? reps : null;
-      set.esfuerzo = esfuerzo !== undefined ? esfuerzo : 0;
-      set.notas = set.notas !== undefined ? set.notas : (set.nota !== undefined ? set.nota : null);
     }
-  }
+    return true;
+  };
+
+  if (!validateExerciseArray(data.ejercicios)) return false;
+  if (data.core && !validateExerciseArray(data.core)) return false;
+  
+  if (!data.core) data.core = [];
+
   return true;
 }
 
@@ -87,10 +97,17 @@ export default function ImportScreen() {
   const resetSession = useWorkoutStore(state => state.resetSession);
   const resetTimer = useWorkoutStore(state => state.resetTimer);
 
-  const totalEjercicios = session ? session.ejercicios.length : 0;
-  const totalSeries = session ? session.ejercicios.reduce((acc, ej) => acc + ej.series.length, 0) : 0;
+  const totalEjercicios = session ? session.ejercicios.length + (session.core?.length || 0) : 0;
+  const totalSeries = session 
+    ? session.ejercicios.reduce((acc, ej) => acc + ej.series.length, 0) + 
+      (session.core || []).reduce((acc, ej) => acc + ej.series.length, 0)
+    : 0;
   const seriesCompletadas = session
     ? session.ejercicios.reduce(
+        (acc, ej) => acc + ej.series.filter(s => s.peso !== null && s.repeticiones !== null).length,
+        0
+      ) +
+      (session.core || []).reduce(
         (acc, ej) => acc + ej.series.filter(s => s.peso !== null && s.repeticiones !== null).length,
         0
       )

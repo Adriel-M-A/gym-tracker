@@ -9,10 +9,14 @@ import { useWorkoutStore } from '../store/workoutStore';
 
 interface ExerciseCardProps {
   exerciseIndex: number;
+  type?: 'ejercicios' | 'core';
 }
 
-export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
-  const exercise = useWorkoutStore(state => state.session!.ejercicios[exerciseIndex]);
+export function ExerciseCard({ exerciseIndex, type = 'ejercicios' }: ExerciseCardProps) {
+  const exercise = useWorkoutStore(state => {
+    const targetArray = type === 'core' ? state.session!.core : state.session!.ejercicios;
+    return targetArray?.[exerciseIndex] || state.session!.ejercicios[exerciseIndex];
+  });
   const updateSet = useWorkoutStore(state => state.updateSet);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -36,7 +40,7 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
 
   const handleLoad = (peso: number, reps: number, esfuerzo: EffortLevel) => {
     if (selectedIndex !== null) {
-      updateSet(exerciseIndex, selectedIndex, peso, reps, esfuerzo);
+      updateSet(type, exerciseIndex, selectedIndex, peso, reps, esfuerzo);
       setSelectedIndex(null);
     }
   };
@@ -46,7 +50,10 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
   const isFinished = completadas === total && total > 0;
 
   return (
-    <View style={[styles.card, isFinished && styles.cardFinished]}>
+    <View style={[
+      styles.card, 
+      isFinished && styles.cardFinished,
+    ]}>
       {/* Header con expand/collapse */}
       <Pressable
         onPress={handleToggleExpand}
@@ -128,12 +135,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
     overflow: 'hidden',
+    borderLeftWidth: 4,
+    borderLeftColor: colors.borderPrimary,
   },
   cardFinished: {
     backgroundColor: colors.surfaceContainerLow,
     opacity: 0.85,
     borderWidth: 1,
     borderColor: colors.border,
+    borderLeftColor: colors.border,
     boxShadow: '0 0 0 rgba(0,0,0,0)',
   },
   headerFinished: {

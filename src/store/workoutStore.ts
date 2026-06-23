@@ -11,6 +11,7 @@ interface WorkoutState {
   setEnergia: (energia: number) => void;
   setSuenio: (suenio: number) => void;
   updateSet: (
+    type: 'ejercicios' | 'core',
     ejercicioIndex: number,
     serieIndex: number,
     peso: number | null,
@@ -41,10 +42,11 @@ export const useWorkoutStore = create<WorkoutState>()(
           if (!state.session) return {};
           return { session: { ...state.session, suenio } };
         }),
-      updateSet: (ejercicioIndex, serieIndex, peso, reps, esfuerzo) =>
+      updateSet: (type, ejercicioIndex, serieIndex, peso, reps, esfuerzo) =>
         set((state) => {
           if (!state.session) return {};
-          const newEjercicios = state.session.ejercicios.map((ej, ei) => {
+          const targetArray = type === 'core' ? state.session.core || [] : state.session.ejercicios;
+          const newArray = targetArray.map((ej, ei) => {
             if (ei !== ejercicioIndex) return ej;
             const newSeries = ej.series.map((s, si) => {
               if (si !== serieIndex) return s;
@@ -57,15 +59,21 @@ export const useWorkoutStore = create<WorkoutState>()(
             });
             return { ...ej, series: newSeries };
           });
-          return { session: { ...state.session, ejercicios: newEjercicios } };
+
+          if (type === 'core') {
+            return { session: { ...state.session, core: newArray } };
+          } else {
+            return { session: { ...state.session, ejercicios: newArray } };
+          }
         }),
       importSession: (newSession: WorkoutSession) =>
         set({ session: newSession }),
       resetSession: () =>
         set((state) => {
           if (!state.session) return {};
-          const cleanEjercicios = state.session.ejercicios.map((ej) => {
-            const cleanSeries = ej.series.map((s) => ({
+          
+          const cleanArray = (arr: any[]) => arr.map((ej) => {
+            const cleanSeries = ej.series.map((s: any) => ({
               ...s,
               peso: null,
               repeticiones: null,
@@ -73,13 +81,15 @@ export const useWorkoutStore = create<WorkoutState>()(
             }));
             return { ...ej, series: cleanSeries };
           });
+
           return {
             session: {
               ...state.session,
               energia: null,
               suenio: null,
               duracion_minutos: 0,
-              ejercicios: cleanEjercicios,
+              ejercicios: cleanArray(state.session.ejercicios),
+              core: state.session.core ? cleanArray(state.session.core) : undefined,
             },
           };
         }),

@@ -255,5 +255,71 @@
         }
       ]
     }
+  ],
+  "core": [
+    {
+      "nombre": "Rueda abdominal",
+      "descanso": "1 a 1.5 min",
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 15,
+          "serie_controlada": 0,
+          "esfuerzo_sugerido": 0,
+          "es_bw": 1,
+          "notas": null,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0
+        },
+        {
+          "numero_serie": 2,
+          "peso_sugerido": 0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 15,
+          "serie_controlada": 0,
+          "esfuerzo_sugerido": 0,
+          "es_bw": 1,
+          "notas": null,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0
+        },
+        {
+          "numero_serie": 3,
+          "peso_sugerido": 0,
+          "reps_sugeridas_min": 10,
+          "reps_sugeridas_max": 15,
+          "serie_controlada": 0,
+          "esfuerzo_sugerido": 0,
+          "es_bw": 1,
+          "notas": null,
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0
+        }
+      ]
+    },
+    {
+      "nombre": "Plancha lateral",
+      "descanso": "1 min",
+      "series": [
+        {
+          "numero_serie": 1,
+          "peso_sugerido": 0,
+          "reps_sugeridas_min": 30,
+          "reps_sugeridas_max": 45,
+          "serie_controlada": 0,
+          "esfuerzo_sugerido": 0,
+          "es_bw": 1,
+          "notas": "Rango de repeticiones representa segundos.",
+          "peso": null,
+          "repeticiones": null,
+          "esfuerzo": 0
+        }
+      ]
+    }
   ]
 }

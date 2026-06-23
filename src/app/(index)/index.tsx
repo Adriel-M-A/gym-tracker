@@ -1,6 +1,7 @@
 import { FlatList, View, StyleSheet, Text } from "react-native";
 import { Stack, router } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useMemo } from "react";
 import { ExerciseCard } from "../../components/ExerciseCard";
 import { SessionHeader } from "../../components/SessionHeader";
 import { Button } from "../../components/Button";
@@ -9,6 +10,25 @@ import { useWorkoutStore } from "../../store/workoutStore";
 
 export default function WorkoutScreen() {
   const session = useWorkoutStore(state => state.session);
+
+  const listData = useMemo(() => {
+    if (!session) return [];
+    
+    const data: any[] = [];
+    
+    session.ejercicios.forEach((ej, index) => {
+      data.push({ itemType: 'ejercicio', index, type: 'ejercicios', key: `ej-${ej.nombre}-${index}` });
+    });
+    
+    if (session.core && session.core.length > 0) {
+      data.push({ itemType: 'core_separator', key: 'core_separator' });
+      session.core.forEach((ej, index) => {
+        data.push({ itemType: 'ejercicio', index, type: 'core', key: `core-${ej.nombre}-${index}` });
+      });
+    }
+    
+    return data;
+  }, [session]);
 
   if (!session) {
     return (
@@ -40,11 +60,25 @@ export default function WorkoutScreen() {
       <Stack.Screen options={{ title: `Sesión ${session.sesion}` }} />
       <View style={styles.container}>
         <FlatList
-          data={session.ejercicios}
-          keyExtractor={(item) => item.nombre}
-          renderItem={({ index }) => (
-            <ExerciseCard exerciseIndex={index} />
-          )}
+          data={listData}
+          keyExtractor={(item) => item.key}
+          renderItem={({ item }) => {
+            if (item.itemType === 'core_separator') {
+              return (
+                <View style={styles.separatorContainer}>
+                  <View style={styles.separatorLine} />
+                  <Text style={styles.separatorText}>BLOQUE COMPLEMENTARIO</Text>
+                  <View style={styles.separatorLine} />
+                </View>
+              );
+            }
+            return (
+              <ExerciseCard 
+                exerciseIndex={item.index} 
+                type={item.type as 'ejercicios' | 'core'} 
+              />
+            );
+          }}
           ListHeaderComponent={<SessionHeader />}
           contentContainerStyle={styles.scrollContent}
           contentInsetAdjustmentBehavior="automatic"
@@ -63,6 +97,24 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 32,
     gap: 8,
+  },
+  separatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginTop: 8,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  separatorText: {
+    fontFamily: 'Anton_400Regular',
+    color: colors.textSecondary,
+    fontSize: 16,
+    paddingHorizontal: 16,
   },
   emptyContainer: {
     flex: 1,
