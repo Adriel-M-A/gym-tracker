@@ -165,11 +165,7 @@ export default function ImportScreen() {
         dialogTitle: `Exportar Día ${finalSession!.dia_rutina}`,
       });
 
-      // Limpiamos la app (cerramos la sesión actual y reseteamos el cronómetro)
-      useWorkoutStore.setState({ session: null });
-      resetTimer();
-
-      Alert.alert("¡Exportado!", "El entrenamiento fue exportado y la sesión activa ha sido cerrada.");
+      Alert.alert("¡Exportado!", "El entrenamiento fue exportado correctamente.");
     } catch (error) {
       Alert.alert("Error al exportar", "No se pudo preparar el archivo para compartir.");
       console.error(error);
@@ -190,6 +186,26 @@ export default function ImportScreen() {
             resetSession();
             resetTimer(); // También reinicia el cronómetro
             Alert.alert("Sesión reiniciada", "Se restableció el entrenamiento al estado inicial.");
+          } 
+        }
+      ]
+    );
+  };
+
+  const handleFinishSession = () => {
+    if (!session) return;
+    Alert.alert(
+      "Confirmar finalización",
+      "¿Estás seguro de que querés finalizar la sesión actual? Se perderán todos los datos cargados no exportados y se cerrará la sesión activa.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { 
+          text: "Finalizar", 
+          style: "destructive", 
+          onPress: () => {
+            useWorkoutStore.setState({ session: null });
+            resetTimer();
+            Alert.alert("Sesión finalizada", "La sesión activa ha sido cerrada.");
           } 
         }
       ]
@@ -218,15 +234,15 @@ export default function ImportScreen() {
               <Text style={styles.statValue}>{seriesCompletadas}/{totalSeries}</Text>
               <Text style={styles.statLabel}>Series</Text>
             </View>
-
+ 
             <View style={styles.divider} />
-
+ 
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{session && session.energia !== null ? `${session.energia}/5` : '—'}</Text>
               <Text style={styles.statLabel}>Energía</Text>
             </View>
           </View>
-
+ 
           <View style={styles.progressContainer}>
             <View style={styles.progressInfo}>
               <Text style={styles.progressLabel}>Progreso del Entrenamiento</Text>
@@ -237,7 +253,7 @@ export default function ImportScreen() {
             </View>
           </View>
         </View>
-
+ 
         {/* Acciones */}
         <Text style={styles.sectionTitle}>Acciones</Text>
         
@@ -247,11 +263,12 @@ export default function ImportScreen() {
             icon="file-download" 
             onPress={handleImport}
             variant="primary"
+            disabled={!!session}
           />
           <Text style={styles.actionDescription}>
-            Cargá un archivo JSON con la planificación de tu entrenamiento. Esto reemplazará la sesión activa.
+            Cargá un archivo JSON con la planificación de tu entrenamiento. {session ? "(Deshabilitado porque tenés una sesión activa en curso)." : "Esto reemplazará la sesión activa."}
           </Text>
-
+ 
           <Button 
             label="Exportar y Compartir" 
             icon="share" 
@@ -262,7 +279,18 @@ export default function ImportScreen() {
           <Text style={styles.actionDescription}>
             Guardá el archivo con tus series realizadas y compartilo por WhatsApp u otra aplicación.
           </Text>
-
+ 
+          <Button 
+            label="Finalizar Sesión Activa" 
+            icon="check-circle" 
+            onPress={handleFinishSession}
+            variant="secondary"
+            disabled={!session}
+          />
+          <Text style={styles.actionDescription}>
+            Cierra la sesión actual y limpia los datos de entrenamiento activos en la aplicación.
+          </Text>
+ 
           <Button 
             label="Reiniciar Sesión Activa" 
             icon="refresh" 

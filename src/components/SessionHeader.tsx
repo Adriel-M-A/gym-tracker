@@ -109,9 +109,10 @@ export function SessionHeader() {
             label="Sueño (hs)" 
             value={suenioHoras ?? 7} 
             onChange={setSuenioHoras} 
-            step={0.5} 
+            step={0.10} 
             min={0} 
             variant="header"
+            isBase60={true}
           />
         </View>
       </View>

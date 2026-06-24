@@ -11,6 +11,7 @@ interface StepperProps {
   max?: number;
   label?: string;
   variant?: 'header' | 'input';
+  isBase60?: boolean;
 }
 
 export function Stepper({ 
@@ -20,22 +21,51 @@ export function Stepper({
   min, 
   max, 
   label,
-  variant = 'header'
+  variant = 'header',
+  isBase60 = false
 }: StepperProps) {
   const handleDecrement = () => {
-    const newValue = value - step;
+    let newValue: number;
+    if (isBase60) {
+      let hours = Math.floor(value);
+      let minutes = Math.round((value - hours) * 100);
+      minutes -= 10;
+      if (minutes < 0) {
+        hours -= 1;
+        minutes = 50;
+      }
+      newValue = hours + minutes / 100;
+    } else {
+      newValue = value - step;
+    }
+
     if (min !== undefined && newValue < min) return;
     onChange(newValue);
   };
 
   const handleIncrement = () => {
-    const newValue = value + step;
+    let newValue: number;
+    if (isBase60) {
+      let hours = Math.floor(value);
+      let minutes = Math.round((value - hours) * 100);
+      minutes += 10;
+      if (minutes >= 60) {
+        hours += 1;
+        minutes = 0;
+      }
+      newValue = hours + minutes / 100;
+    } else {
+      newValue = value + step;
+    }
+
     if (max !== undefined && newValue > max) return;
     onChange(newValue);
   };
 
-  // Redondear para evitar flotantes en JS
-  const displayValue = Number.isInteger(value) ? value.toString() : parseFloat(value.toFixed(2)).toString();
+  // Redondear para evitar flotantes en JS y mostrar siempre dos decimales si el paso tiene parte decimal o es base 60
+  const displayValue = isBase60 
+    ? value.toFixed(2) 
+    : (step % 1 !== 0 ? value.toFixed(2) : value.toString());
 
   const isDecrementDisabled = min !== undefined && value <= min;
   const isIncrementDisabled = max !== undefined && value >= max;
@@ -58,13 +88,13 @@ export function Stepper({
         >
           <MaterialIcons 
             name="remove" 
-            size={20} 
+            size={isHeader ? 16 : 20} 
             color={isDecrementDisabled ? '#cfc4c5' : colors.textPrimary} 
           />
         </Pressable>
         
         <View style={isHeader ? styles.valueContainerHeader : styles.valueContainerInput}>
-          <Text style={styles.valueText}>{displayValue}</Text>
+          <Text style={[styles.valueText, isHeader && styles.valueTextHeader]}>{displayValue}</Text>
         </View>
         
         <Pressable 
@@ -78,7 +108,7 @@ export function Stepper({
         >
           <MaterialIcons 
             name="add" 
-            size={20} 
+            size={isHeader ? 16 : 20} 
             color={isIncrementDisabled ? '#cfc4c5' : colors.textPrimary} 
           />
         </Pressable>
@@ -105,7 +135,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
+    gap: 8,
     width: '100%',
   },
   controlsInput: {
@@ -121,9 +151,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   buttonHeader: {
-    width: 40,
-    height: 40,
-    borderRadius: 4,
+    width: 32,
+    height: 32,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: colors.border,
     justifyContent: 'center',
@@ -131,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   buttonInput: {
-    width: 44,
+    width: 36,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -143,8 +173,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   valueContainerHeader: {
-    flex: 1,
-    minWidth: 40,
+    minWidth: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -155,8 +184,11 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontFamily: 'Lexend_700Bold',
-    fontSize: 24,
+    fontSize: 20,
     color: colors.textPrimary,
+  },
+  valueTextHeader: {
+    fontSize: 16,
   },
 });
 
