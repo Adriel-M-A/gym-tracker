@@ -1,0 +1,43 @@
+# Ignore files and folders for EAS Build
+
+# Dependencies
+node_modules/
+
+# Expo & Metro
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+
+# Agent & IDE caches (causing symlink permission errors on Windows)
+.agents/
+.claude/
+.vscode/
+
+# Native credentials and keys
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# OS files
+.DS_Store
+
+# Local environments
+.env*.local
+
+# Typescript build info
+*.tsbuildinfo
+
+# Generated native folders
+/ios
+/android
